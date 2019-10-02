@@ -8,8 +8,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "firebase": "^7.0.0",
     "react": "16.8.6",
     "react-native": "0.60.5",
+    "react-native-gesture-handler": "^1.4.1",
+    "react-native-navigation": "^2.27.9",
     "react-native-screens": "^2.0.0-alpha.3",
     "react-navigation": "git+https://github.com/react-community/react-navigation.git#7edd9a7",
     "react-navigation-stack": "^1.9.3"
