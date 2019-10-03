@@ -29,6 +29,7 @@ import { createAppContainer } from 'react-navigation';
 
 import Login from './components/Login';
 import CreateAccount from './components/CreateAccount';
+import Main from './components/Main';
 // import Chat from './components/Chat';
 
 
@@ -36,6 +37,7 @@ import CreateAccount from './components/CreateAccount';
 const AppNavigator = createStackNavigator({
   Login: { screen: Login },
   CreateAccount: { screen: CreateAccount },
+  Main: { screen: Main },
   //Chat: { screen: Chat },
 });
 
