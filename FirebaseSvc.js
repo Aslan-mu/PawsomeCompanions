@@ -1,15 +1,14 @@
 import firebase from 'firebase';
 import uuid from 'uuid';
 import config from './firebaseConfig';
-
-
+import 'firebase/firestore';
 
 class FirebaseSvc {
     constructor() {
         if (!firebase.apps.length) {
-          firebase.initializeApp(config);
+            firebase.initializeApp(config);
         } else {
-          console.log("firebase apps already running...")
+            console.log("firebase apps already running...")
         }
     }
     
@@ -38,9 +37,9 @@ class FirebaseSvc {
     onAuthStateChanged = user => {
         if (!user) {
             try {
-            this.login(user);
+                this.login(user);
             } catch ({ message }) {
-            console.log("Failed:" + message);
+                console.log("Failed:" + message);
             }
         } else {
             console.log("Reusing auth...");
@@ -48,24 +47,34 @@ class FirebaseSvc {
     };
 
     get refUser() {
-        return firebase.database().ref('Users');
+        return firebase.firestore().collection('Users');
     }
 
-    createAccount = async (user) => {
-    firebase.auth()
+    get refMessages() {
+        return firebase.firestore().collection('Messages');
+    }
+
+    createAccount = async (user,success_callback, failed_callback) => {
+        firebase.auth()
         .createUserWithEmailAndPassword(user.email, user.password)
         .then(function() {
+            success_callback();
             console.log("created user successfully. User email:" + user.email + " name:" + user.name);
+            const userinfo = { 
+                email: user.email,
+                name: user.name,
+            };
+            firebase.firestore().collection('Users').add(userinfo);
             var userf = firebase.auth().currentUser;
             userf.updateProfile({ displayName: user.name})
             .then(function() {
-                console.log("Updated displayName successfully. name:" + user.name);
                 alert("User " + user.name + " was created successfully. Please login.");
             }, function(error) {
                 console.warn("Error update displayName.");
             });
+            
         }, function(error) {
-            console.error("got error:" + typeof(error) + " string:" + error.message);
+            //console.error("got error:" + typeof(error) + " string:" + error.message);
             alert("Create account failed. Error: "+error.message);
         });
     }

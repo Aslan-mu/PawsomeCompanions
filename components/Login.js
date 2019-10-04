@@ -5,9 +5,6 @@ import {
   Button, ImageEditor,
 } from 'react-native';
 import firebaseSvc from '../FirebaseSvc';
-import firebase from 'firebase';
-import { auth, initializeApp, storage } from 'firebase';
-import uuid from 'uuid';
 
 class Login extends React.Component {
     static navigationOptions = {
@@ -38,8 +35,7 @@ class Login extends React.Component {
     };
   
     loginSuccess = () => {
-        console.log('login successful, navigate to chat.');
-        console.log(firebaseSvc.getUserInfo(this.state.email));
+        console.log('login successful, navigate to Main.');
         this.props.navigation.navigate('Main', {
             name: this.state.name,
             email: this.state.email,
@@ -48,7 +44,7 @@ class Login extends React.Component {
     
     loginFailed = () => {
         console.log('login failed ***');
-        alert('Login failure. Please tried again.');
+        alert('Login failure. Please try again.');
     };
   
   

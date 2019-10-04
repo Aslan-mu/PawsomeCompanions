@@ -19,16 +19,29 @@ class CreateAccount extends React.Component {
   
     onPressCreate = async () => {
         console.log('create account... email:' + this.state.email);
-        try {
-            const user = {
-                name: this.state.name,
-                email: this.state.email,
-                password: this.state.password,
-            };
-            await firebaseSvc.createAccount(user);
-        } catch ({ message }) {
-            console.log('create account failed. catch error:' + message);
-        }
+        const user = {
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password,
+        };
+        await firebaseSvc.createAccount(
+            user,
+            this.createSuccess,
+            this.createFailed
+        );
+    };
+
+    createSuccess = () => {
+        console.log('Create successful, navigate to login page.');
+        this.props.navigation.navigate('Login', {
+            name: this.state.name,
+            email: this.state.email,
+        });
+    };
+    
+    createFailed = () => {
+        console.log('Create failure!');
+        alert('Create failure. Please try again.');
     };
   
     onChangeTextEmail = email => this.setState({ email });

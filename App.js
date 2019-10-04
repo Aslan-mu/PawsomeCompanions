@@ -33,14 +33,11 @@ import Main from './components/Main';
 // import Chat from './components/Chat';
 
 
-
 const AppNavigator = createStackNavigator({
   Login: { screen: Login },
   CreateAccount: { screen: CreateAccount },
   Main: { screen: Main },
   //Chat: { screen: Chat },
 });
-
-
 
 export default createAppContainer(AppNavigator);
