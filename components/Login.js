@@ -12,10 +12,9 @@ class Login extends React.Component {
     };
   
     state = {
-        name: '',
-        email: '',
-        password: '',
-        avatar: '',
+        name: 'aslanbaimu@gmail.com',
+        email: 'aslanbaimu@gmail.com',
+        password: '123456',
     };
   
     // using Fire.js
@@ -69,13 +68,13 @@ class Login extends React.Component {
                 value={this.state.password}
             />
             <Button
-                title="Login 2"
+                title="Login"
                 style={styles.buttonText}
                 onPress={this.onPressLogin}
             />
     
             <Button
-                title="Go to create new account"
+                title="Create new account"
                 style={styles.buttonText}
                 onPress={() => this.props.navigation.navigate("CreateAccount")}
             />
