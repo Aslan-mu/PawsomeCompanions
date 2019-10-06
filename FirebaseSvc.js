@@ -1,5 +1,4 @@
 import firebase from 'firebase';
-import uuid from 'uuid';
 import config from './firebaseConfig';
 import 'firebase/firestore';
 
@@ -11,24 +10,11 @@ class FirebaseSvc {
             console.log("firebase apps already running...")
         }
     }
-    
+    state = {};
     login = async(user, success_callback, failed_callback) => {
         console.log("logging in");
         const output = await firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then(success_callback, failed_callback);
-    }
-
-    getUserInfo = (email) => {
-        this.refUser.orderByChild('email').equalTo(email).once('value').then(
-            function(snapshot){
-                snapshot.forEach(function(childSnapshot){
-                    return {
-                        name: childSnapshot.val().name,
-                        email: childSnapshot.val().email,
-                    }
-                })
-            }
-        )
     }
 
     observeAuth = () =>
@@ -50,8 +36,8 @@ class FirebaseSvc {
         return firebase.firestore().collection('Users');
     }
 
-    get refMessages() {
-        return firebase.firestore().collection('Messages');
+    refMessages() {
+        return firebase.database().ref('Messages');
     }
 
     createAccount = async (user,success_callback, failed_callback) => {
@@ -79,7 +65,6 @@ class FirebaseSvc {
         });
     }
 
-
     onLogout = user => {
         firebase.auth().signOut().then(function() {
             console.log("Sign-out successful.");
@@ -96,26 +81,51 @@ class FirebaseSvc {
         return firebase.database().ref('Messages');
     }
 
-    parse = snapshot => {
+    parse = (name,chatWith,snapshot) => {
+        var message = null;
         const { timestamp: numberStamp, text, user } = snapshot.val();
-        const { key: id } = snapshot;
-        const { key: _id } = snapshot;
-        const timestamp = new Date(numberStamp);
-
-        const message = {
-            id,
-            _id,
-            timestamp,
-            text,
-            user,
-        };
+        if(user.name == name && user.chatWith ==chatWith){
+            const { key: id } = snapshot;
+            const { key: _id } = snapshot;
+            const timestamp = new Date(numberStamp);
+            message = {
+                id,
+                _id,
+                timestamp,
+                text,
+                user: {
+                    _id:user._id,
+                    id:user.id,
+                    name:name,
+                    chatWith:chatWith,
+                }
+            };
+        }
+        if(user.chatWith == name && user.name == chatWith){
+            const { key: id } = snapshot;
+            const { key: _id } = snapshot;
+            const timestamp = new Date(numberStamp);
+            message = {
+                id,
+                _id,
+                timestamp,
+                text,
+                user: {
+                    _id:user._id,
+                    id:user.id,
+                    name:chatWith,
+                    chatWith:name,
+                }
+            };
+        }
         return message;
     };
 
-    refOn = callback => {
-        this.ref
-        .limitToLast(20)
-        .on('child_added', snapshot => callback(this.parse(snapshot)));
+    refOn = (name,chatWith,callback) => {
+        this.refMessages()
+        .on('child_added',snapshot => {
+            callback(this.parse(name,chatWith,snapshot));
+        });
     }
 
     get timestamp() {
@@ -123,7 +133,7 @@ class FirebaseSvc {
     }
     
     // send the message to the Backend
-    send = messages => {
+    send = (messages) => {
         for (let i = 0; i < messages.length; i++) {
             const { text, user } = messages[i];
             const message = {
@@ -131,12 +141,12 @@ class FirebaseSvc {
                 user,
                 createdAt: this.timestamp,
             };
-            this.ref.push(message);
+            this.refMessages().push(message);
         }
     };
 
     refOff() {
-        this.ref.off();
+        this.refMessages().off();
     }
 }
 const firebaseSvc = new FirebaseSvc();

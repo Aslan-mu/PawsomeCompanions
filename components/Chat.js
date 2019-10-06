@@ -8,48 +8,66 @@ import firebaseSvc from '../FirebaseSvc';
 //   email?: string,
 // };
 
-class Chat extends React.Component {
+class Chat extends React.Component{
 
-  constructor(props) {
-    super(props);
-  }
-  static navigationOptions = ({ navigation }) => ({
-    title: (navigation.state.params || {}).chatWith || 'Chat!',
-  });
+    constructor(props) {
+        super(props);
+        this.state.user = {
+            name: this.props.navigation.state.params.name,
+            chatWith: this.props.navigation.state.params.chatWith,
+        }
+    }
+    static navigationOptions = ({ navigation }) => ({
+        title: (navigation.state.params || {}).chatWith || 'Chat!',
+    });
 
-  state = {
-    messages: [],
-  };
-
-  get user() {
-    return {
-      name: this.props.navigation.state.params.name,
-      email: this.props.navigation.state.params.email,
-      id: firebaseSvc.uid,
-      _id: firebaseSvc.uid, // need for gifted-chat
+    state = {
+        user:{
+            name:"",
+            chatWith:""
+        },
+        messages: [],
     };
-  }
 
-  render() {
-    return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={firebaseSvc.send}
-        user={this.user}
-      />
-    );
-  }
+    get user() {
+        return {
+            name: this.props.navigation.state.params.name,
+            chatWith: this.props.navigation.state.params.chatWith,
+            id: firebaseSvc.uid,
+            _id: firebaseSvc.uid, // need for gifted-chat
+        };
+    }
 
-  componentDidMount() {
-    firebaseSvc.refOn(message =>
-      this.setState(previousState => ({
-        messages: GiftedChat.append(previousState.messages, message),
-      }))
-    );
-  }
-  componentWillUnmount() {
-    firebaseSvc.refOff();
-  }
+    render() {
+        return (
+        <GiftedChat
+            messages = {this.state.messages}
+            onSend = {firebaseSvc.send}
+            user = {this.user}
+        />
+        );
+    }
+
+    componentDidMount() {
+        this.setState({
+            user:{
+                name: this.state.user.name ||  this.props.navigation.state.params.name,
+                chatWith: this.state.user.chatWith ||  this.props.navigation.state.params.chatWith,
+            }
+        });
+
+        firebaseSvc.refOn(this.props.navigation.state.params.name,this.props.navigation.state.params.chatWith,message =>{
+            if(message!=null){
+                this.setState(previousState => ({
+                    messages: GiftedChat.append(previousState.messages, message),
+                }))
+            }
+            }
+        );
+    }
+    componentWillUnmount() {
+        firebaseSvc.refOff();
+    }
 }
 
 export default Chat;

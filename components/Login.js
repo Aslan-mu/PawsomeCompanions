@@ -12,12 +12,11 @@ class Login extends React.Component {
     };
   
     state = {
-        name: 'aslanbaimu@gmail.com',
+        name: 'default',
         email: 'aslanbaimu@gmail.com',
         password: '123456',
     };
   
-    // using Fire.js
     onPressLogin = async () => {
         console.log('pressing login... email:' + this.state.email);
         const user = {
@@ -25,7 +24,6 @@ class Login extends React.Component {
             email: this.state.email,
             password: this.state.password
         };
-  
         const response = firebaseSvc.login(
             user,
             this.loginSuccess,
@@ -33,12 +31,28 @@ class Login extends React.Component {
         );
     };
   
-    loginSuccess = () => {
-        console.log('login successful, navigate to Main.');
+    setUserInfo = (userEmail, callback) => {
+        firebaseSvc.refUser().onSnapshot((snapshot)=>{
+            snapshot.forEach((doc) =>{
+                const {email,name} = doc.data()
+                 if(JSON.stringify(userEmail) == JSON.stringify(email)){
+                    this.props.navigation.state.name = name 
+                    callback(name)
+                }
+            })
+        })
+    }
+
+    navigateToMain = (userName)=>{
         this.props.navigation.navigate('Main', {
-            name: this.state.name,
+            name: userName,
             email: this.state.email,
         });
+    }
+
+    loginSuccess =  () => {
+        alert('Login Success!');
+        this.setUserInfo(this.state.email, this.navigateToMain);
     };
     
     loginFailed = () => {
