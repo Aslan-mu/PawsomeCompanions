@@ -13,6 +13,7 @@ class Chat extends React.Component{
     constructor(props) {
         super(props);
         this.state.user = {
+            _idTo: this.props.navigation.state.params._idTo,
             name: this.props.navigation.state.params.name,
             chatWith: this.props.navigation.state.params.chatWith,
         }
@@ -33,7 +34,7 @@ class Chat extends React.Component{
         return {
             name: this.props.navigation.state.params.name,
             chatWith: this.props.navigation.state.params.chatWith,
-            id: firebaseSvc.uid,
+            _idTo: this.props.navigation.state.params._idTo,
             _id: firebaseSvc.uid, // need for gifted-chat
         };
     }
@@ -56,7 +57,7 @@ class Chat extends React.Component{
             }
         });
 
-        firebaseSvc.refOn(this.props.navigation.state.params.name,this.props.navigation.state.params.chatWith,message =>{
+        firebaseSvc.refOn(this.state.user.name,this.state.user.chatWith,this.state.user._idTo,message =>{
             if(message!=null){
                 this.setState(previousState => ({
                     messages: GiftedChat.append(previousState.messages, message),

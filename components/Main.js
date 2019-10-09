@@ -16,9 +16,10 @@ class Main extends React.Component {
         itemsRef.onSnapshot((Snapshot) => {
             var items = [];
             Snapshot.forEach((doc) => {
-                const {email, name} = doc.data()
+                const {email, name, id} = doc.data()
                 items.push({
-                id: doc.id,
+                id:doc.id,// used as unique id in the list
+                _idTo:id,
                 name: name,
                 email: email,
               });
@@ -38,6 +39,10 @@ class Main extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+        firebaseSvc.refOff();
+    }
+
     render() {
         return (
             <View>
@@ -55,6 +60,7 @@ class Main extends React.Component {
                                     chatWith: item.name,
                                     name: this.state.name,
                                     email: this.state.email,
+                                    _idTo: item._idTo,
                             })} 
                             title={item.name} 
                         />}
