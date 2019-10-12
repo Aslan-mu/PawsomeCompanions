@@ -25,6 +25,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import { createStackNavigator } from 'react-navigation-stack'
+import { createBottomTabNavigator } from 'react-navigation-tabs'
 import { createAppContainer } from 'react-navigation';
 
 import Login from './components/Login';
@@ -33,15 +34,34 @@ import Referral from './components/UpdateProfile/Referral';
 import PetSittingPreference from './components/UpdateProfile/PetSittingPreference';
 import Main from './components/Main';
 import Chat from './components/Chat';
+import CommunityFeed from "./components/CommunityFeed/CommunityFeed";
+import NewCommunityPost from './components/CommunityFeed/NewCommunityPost';
+import PetSitting from "./components/PetSitting/PetSitting";
 
+const communityStack = createStackNavigator({
+  Feed: {screen: CommunityFeed},
+  NewCommunityPost: {screen: NewCommunityPost}
+})
 
-const AppNavigator = createStackNavigator({
+const petsittingStack = createStackNavigator({
+  PetSitting: PetSitting
+
+})
+
+const loginAppNavigator = createStackNavigator({
   Login: { screen: Login },
   CreateAccount: { screen: CreateAccount },
   Referral: { screen: Referral },
   Main: { screen: Main },
   Chat: { screen: Chat },
-  PetSittingPreference: { screen: PetSittingPreference },
 });
 
-export default createAppContainer(AppNavigator);
+const tabNavigator = createBottomTabNavigator({
+  // Main: { screen: Main },
+  // Chat: { screen: Chat },
+  Login: loginAppNavigator,
+  Feed: communityStack,
+  PetSitting: petsittingStack
+})
+
+export default createAppContainer(tabNavigator);
