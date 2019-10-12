@@ -30,6 +30,8 @@ import { createAppContainer } from 'react-navigation';
 
 import Login from './components/Login';
 import CreateAccount from './components/CreateAccount';
+import Referral from './components/UpdateProfile/Referral';
+import PetSittingPreference from './components/UpdateProfile/PetSittingPreference';
 import Main from './components/Main';
 import Chat from './components/Chat';
 import CommunityFeed from "./components/CommunityFeed"
@@ -50,9 +52,14 @@ const tabNavigator = createBottomTabNavigator({
 const AppNavigator = createStackNavigator({
   Login: { screen: Login },
   CreateAccount: { screen: CreateAccount },
+  Referral: { screen: Referral },
   Main: { screen: Main },
   Chat: { screen: Chat },
+<<<<<<< HEAD
   Feed: tabNavigator
+=======
+  PetSittingPreference: { screen: PetSittingPreference },
+>>>>>>> master
 });
 
 export default createAppContainer(tabNavigator);

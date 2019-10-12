@@ -5,6 +5,7 @@ import {
   Button, ImageEditor,
 } from 'react-native';
 import firebaseSvc from '../FirebaseSvc';
+import firebase from 'firebase';
 
 class Login extends React.Component {
     static navigationOptions = {
@@ -12,9 +13,9 @@ class Login extends React.Component {
     };
   
     state = {
-        name: 'default',
-        email: 'aslanbaimu@gmail.com',
-        password: '123456',
+        name: '',
+        email: '',
+        password: '',
     };
   
     onPressLogin = async () => {
@@ -31,28 +32,23 @@ class Login extends React.Component {
         );
     };
   
-    setUserInfo = (userEmail, callback) => {
-        firebaseSvc.refUser().onSnapshot((snapshot)=>{
-            snapshot.forEach((doc) =>{
-                const {email,name} = doc.data()
-                 if(JSON.stringify(userEmail) == JSON.stringify(email)){
-                    this.props.navigation.state.name = name 
-                    callback(name)
-                }
-            })
-        })
+    setUserInfo = (callback) => {
+        userf = firebase.auth().currentUser
+        global.currentUser = {
+            id: userf.uid,
+            email: userf.email,
+            name: userf.displayName,
+         }
+         callback()
     }
 
-    navigateToMain = (userName)=>{
-        this.props.navigation.navigate('Main', {
-            name: userName,
-            email: this.state.email,
-        });
+    navigateToMain = ()=>{
+        this.props.navigation.navigate('Main');
     }
 
     loginSuccess =  () => {
         alert('Login Success!');
-        this.setUserInfo(this.state.email, this.navigateToMain);
+        this.setUserInfo(this.navigateToMain);
     };
     
     loginFailed = () => {

@@ -32,11 +32,13 @@ class CreateAccount extends React.Component {
     };
 
     createSuccess = () => {
-        console.log('Create successful, navigate to login page.');
-        this.props.navigation.navigate('Login', {
-            name: this.state.name,
-            email: this.state.email,
-        });
+        // console.log('Create successful, navigate to login page.');
+        // this.props.navigation.navigate('Login', {
+        //     name: this.state.name,
+        //     email: this.state.email,
+        // });
+        alert('Create successful, create profile now!');
+        this.props.navigation.navigate('Referral');
     };
     
     createFailed = () => {
