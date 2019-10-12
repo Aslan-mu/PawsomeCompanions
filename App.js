@@ -34,32 +34,34 @@ import Referral from './components/UpdateProfile/Referral';
 import PetSittingPreference from './components/UpdateProfile/PetSittingPreference';
 import Main from './components/Main';
 import Chat from './components/Chat';
-import CommunityFeed from "./components/CommunityFeed"
-import NewCommunityPost from './components/NewCommunityPost';
-
+import CommunityFeed from "./components/CommunityFeed/CommunityFeed";
+import NewCommunityPost from './components/CommunityFeed/NewCommunityPost';
+import PetSitting from "./components/PetSitting/PetSitting";
 
 const communityStack = createStackNavigator({
   Feed: {screen: CommunityFeed},
-  NewCommunityFeedPost: {screen: NewCommunityPost}
+  NewCommunityPost: {screen: NewCommunityPost}
 })
 
-const tabNavigator = createBottomTabNavigator({
-  // Main: { screen: Main },
-  // Chat: { screen: Chat },
-  Feed: communityStack,
+const petsittingStack = createStackNavigator({
+  PetSitting: PetSitting
+
 })
 
-const AppNavigator = createStackNavigator({
+const loginAppNavigator = createStackNavigator({
   Login: { screen: Login },
   CreateAccount: { screen: CreateAccount },
   Referral: { screen: Referral },
   Main: { screen: Main },
   Chat: { screen: Chat },
-<<<<<<< HEAD
-  Feed: tabNavigator
-=======
-  PetSittingPreference: { screen: PetSittingPreference },
->>>>>>> master
 });
+
+const tabNavigator = createBottomTabNavigator({
+  // Main: { screen: Main },
+  // Chat: { screen: Chat },
+  Login: loginAppNavigator,
+  Feed: communityStack,
+  PetSitting: petsittingStack
+})
 
 export default createAppContainer(tabNavigator);
