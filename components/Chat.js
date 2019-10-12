@@ -14,7 +14,7 @@ class Chat extends React.Component{
         super(props);
         this.state.user = {
             _idTo: this.props.navigation.state.params._idTo,
-            name: this.props.navigation.state.params.name,
+            name: global.currentUser.name,
             chatWith: this.props.navigation.state.params.chatWith,
         }
     }
@@ -32,10 +32,10 @@ class Chat extends React.Component{
 
     get user() {
         return {
-            name: this.props.navigation.state.params.name,
+            name: global.currentUser.name,
             chatWith: this.props.navigation.state.params.chatWith,
             _idTo: this.props.navigation.state.params._idTo,
-            _id: firebaseSvc.uid, // need for gifted-chat
+            _id: global.currentUser.id, // need for gifted-chat
         };
     }
 
@@ -52,8 +52,9 @@ class Chat extends React.Component{
     componentDidMount() {
         this.setState({
             user:{
-                name: this.state.user.name ||  this.props.navigation.state.params.name,
+                name: this.state.user.name ||  global.currentUser.name,
                 chatWith: this.state.user.chatWith ||  this.props.navigation.state.params.chatWith,
+                _idTo: this.props.navigation.state.params._idTo,
             }
         });
 

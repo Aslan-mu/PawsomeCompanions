@@ -47,22 +47,27 @@ class FirebaseSvc {
             success_callback();
             console.log("created user successfully. User email:" + user.email + " name:" + user.name);
             var userf = firebase.auth().currentUser;
-            const userinfo = { 
-                id: userf.uid,
-                email: user.email,
-                name: user.name,
-            };
-            firebase.firestore().collection('Users').add(userinfo);
             userf.updateProfile({ displayName: user.name})
             .then(function() {
-                alert("User " + user.name + " was created successfully. Please login.");
+                const userinfo = { 
+                    id: userf.uid,
+                    email: userf.email,
+                    name: userf.displayName,
+                };
+                // use random-generated id as key: 
+                // firebase.firestore().collection('Users').add(userinfo);
+
+                // use user_id as key: 
+                firebase.firestore().collection('Users').doc(userinfo.id).set(userinfo);
+                global.currentUser = userinfo;
             }, function(error) {
                 console.warn("Error update displayName.");
             });
             
+            
         }, function(error) {
-            console.error("got error:" + typeof(error) + " string:" + error.message);
-            alert("Create account failed. Error: "+error.message);
+            //console.error("got error:" + typeof(error) + " string:" + error.message);
+            alert("Create account failed. Error: " + error.message);
         });
     }
 
@@ -78,14 +83,10 @@ class FirebaseSvc {
         return (firebase.auth().currentUser || {}).uid;
     }
 
-    get ref() {
-        return firebase.database().ref('Messages');
-    }
-
     parse = (name,chatWith,_idTo,snapshot) => {
         var message = null;
         const { timestamp: numberStamp, text, user } = snapshot.val();
-        var userf = this.uid;
+        var userf = global.currentUser.id;
         if(user && user._id == userf && user._idTo == _idTo){
             const { key: id } = snapshot;
             const { key: _id } = snapshot;
@@ -114,9 +115,7 @@ class FirebaseSvc {
                 user: {
                     _id:_idTo,
                     _idTo:userf,
-                    // id:user.id,
                     name:chatWith,
-                    // chatWith:name,
                 }
             };
         }
@@ -146,6 +145,8 @@ class FirebaseSvc {
             this.refMessages().push(message);
         }
     };
+
+    updateReferral = (referral) => this.refUser().doc(global.currentUser.id).update({referral: referral})
 
     refOff() {
         this.refMessages().off();

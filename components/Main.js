@@ -16,26 +16,25 @@ class Main extends React.Component {
         itemsRef.onSnapshot((Snapshot) => {
             var items = [];
             Snapshot.forEach((doc) => {
-                const {email, name, id} = doc.data()
+                const {name, id} = doc.data()
                 items.push({
                 id:doc.id,// used as unique id in the list
                 _idTo:id,
                 name: name,
-                email: email,
               });
             });
             this.setState({
                 data: items,
             });
         });
-        this.state.name = this.props.navigation.state.params.name;
-        this.state.email = this.props.navigation.state.params.email;
+        this.state.name = global.currentUser.name;
+        this.state.email = global.currentUser.email;
     }
 
     componentDidMount() {
         this.setState({
-            name: this.props.navigation.state.params.name,
-            email: this.props.navigation.state.params.email,
+            name: global.currentUser.name,
+            email: global.currentUser.email,
         });
     }
 
@@ -58,8 +57,6 @@ class Main extends React.Component {
                             onPress={
                                 ()=>this.props.navigation.navigate('Chat', {
                                     chatWith: item.name,
-                                    name: this.state.name,
-                                    email: this.state.email,
                                     _idTo: item._idTo,
                             })} 
                             title={item.name} 
