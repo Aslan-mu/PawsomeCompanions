@@ -92,6 +92,12 @@ class Login extends React.Component {
                 style={styles.buttonText}
                 onPress={() => this.props.navigation.navigate("CreateAccount")}
             />
+
+            <Button
+                title="Community feed test"
+                style={styles.buttonText}
+                onPress={() => this.props.navigation.navigate("Feed")}
+            />
             </View>
         );
     }

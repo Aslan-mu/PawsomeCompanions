@@ -25,19 +25,34 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import { createStackNavigator } from 'react-navigation-stack'
+import { createBottomTabNavigator } from 'react-navigation-tabs'
 import { createAppContainer } from 'react-navigation';
 
 import Login from './components/Login';
 import CreateAccount from './components/CreateAccount';
 import Main from './components/Main';
 import Chat from './components/Chat';
+import CommunityFeed from "./components/CommunityFeed"
+import NewCommunityPost from './components/NewCommunityPost';
 
+
+const communityStack = createStackNavigator({
+  Feed: {screen: CommunityFeed},
+  NewCommunityFeedPost: {screen: NewCommunityPost}
+})
+
+const tabNavigator = createBottomTabNavigator({
+  // Main: { screen: Main },
+  // Chat: { screen: Chat },
+  Feed: communityStack,
+})
 
 const AppNavigator = createStackNavigator({
   Login: { screen: Login },
   CreateAccount: { screen: CreateAccount },
   Main: { screen: Main },
   Chat: { screen: Chat },
+  Feed: tabNavigator
 });
 
-export default createAppContainer(AppNavigator);
+export default createAppContainer(tabNavigator);
