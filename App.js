@@ -37,6 +37,8 @@ import Chat from './components/Chat';
 import CommunityFeed from "./components/CommunityFeed/CommunityFeed";
 import NewCommunityPost from './components/CommunityFeed/NewCommunityPost';
 import PetSitting from "./components/PetSitting/PetSitting";
+import PetSittingBasicInformation from "./components/PetSitting/PetSittingBasicInformation"
+import SearchSitterList from "./components/PetSitting/SearchSitterScreen"
 
 const communityStack = createStackNavigator({
   Feed: {screen: CommunityFeed},
@@ -44,8 +46,9 @@ const communityStack = createStackNavigator({
 })
 
 const petsittingStack = createStackNavigator({
-  PetSitting: PetSitting
-
+  PetSitting: PetSitting,
+  PetSittingBasicInformation: PetSittingBasicInformation,
+  SearchSitterList: SearchSitterList
 })
 
 const loginAppNavigator = createStackNavigator({
@@ -61,7 +64,7 @@ const tabNavigator = createBottomTabNavigator({
   // Chat: { screen: Chat },
   Login: loginAppNavigator,
   Feed: communityStack,
-  PetSitting: petsittingStack
+  PetSitting: petsittingStack,
 })
 
 export default createAppContainer(tabNavigator);

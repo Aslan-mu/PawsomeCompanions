@@ -26,7 +26,22 @@ class NewCommunityPost extends React.Component {
     }
 
     componentDidMount = () => {
-        this.props.navigation.setParams({handleSave: () => this.props.navigation.addPost(this.state)})
+        console.log(this.props.navigation.state)
+        this.props.navigation.setParams({handleSave: () => 
+        {    
+            this.props.navigation.state.params.addNewPost(
+            {   
+                text: this.state.text,
+                imageSource: this.state.imageSource,
+                likeNumber: 0,
+                commentNumber: 0,
+                user:""
+            })
+
+            // console.log(this.state.imageSource.substring(0,300))
+        }
+        }
+        )
     }
 
     onChangeText = (text) =>{
@@ -50,11 +65,9 @@ class NewCommunityPost extends React.Component {
               console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
               console.log('User tapped custom button: ', response.customButton);
-            } else {
-              const source = { uri: response.uri };
-          
+            } else {          
               // You can also display the image using data:
-              // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+              const source = { uri: 'data:image/jpeg;base64,' + response.data };
           
               this.setState({
                 imageSource: source,
@@ -86,3 +99,4 @@ class NewCommunityPost extends React.Component {
 
 
 export default NewCommunityPost
+

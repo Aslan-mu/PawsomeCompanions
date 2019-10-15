@@ -7,7 +7,16 @@ import {
 } from "react-native"
 
 export default class PetSitting extends React.Component {
- 
+
+    // dummyUserData = 
+    //     [
+    //         {
+    //             userName:"",
+    //             userId:"",
+    //         }
+
+    //     ]
+    
     constructor(props) {
         super(props)
     }
@@ -19,9 +28,14 @@ export default class PetSitting extends React.Component {
     render(){
         return (
             <View>
-                <Text>
+                {/* <Text>
                     This is the pet sitting page
-                </Text>
+                </Text> */}
+
+                <Button title="Request new pet owners" style={{width:"80%"}} onPress={()=>{this.props.navigation.navigate("SearchSitterList")}}/>
+                
+                {/* User link */}
+
             </View>
         )
     }
