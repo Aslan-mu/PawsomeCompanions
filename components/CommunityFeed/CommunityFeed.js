@@ -27,12 +27,22 @@ function IndividualPostCard(props) {
     const imageString = data.imageSourceText
     return (
         <View style={styles.card} >
+            <View style={{flexDirection: "row", alignItems: "center", height:60}}>
+                <View style={styles.personProfilePhoto}  />
+                <View>
+                    <Text> Jordan </Text>
+                    <Text> 3 hrs ago </Text>
+                </View>
+                <Icon size={24} name="more-vert" style={{marginLeft: 200}}></Icon>
+                
+            </View>
+            
             <Image style={{ height: 150, resizeMode: "contain" }} source={data.imageSource}>
             </Image>
             <View style={{ flex: 1, flexDirection: "column" }}>
                 {/* Person and text */}
                 <View style={{ flex: 1, flexDirection: "row", height: 70, alignItems: "center" }}>
-                    <View style={styles.personProfilePhoto} />
+                    {/* <View style={styles.personProfilePhoto} /> */}
                     <Text>{data.text}</Text>
                 </View>
 
@@ -54,28 +64,31 @@ class CommunityFeed extends React.Component {
     feedData = [{
         text: "This pet is so cute",
         imageSource: testImage,
-        user: "",
+        user: "Jordan",
         likeNumber: 10,
         commentNumber: 4,
         liked: false,
-        commented: false
+        commented: false,
+        timestamp: 1571163581361
     },
     {
         text: "This pet is so cute",
         imageSource: testImage,
-        user: "",
+        user: "Sam",
         likeNumber: 10,
         commentNumber: 20,
         liked: false,
-        commented: false
+        commented: false,
+        timestamp: 1571163581361
     }, {
         text: "This pet is so cute",
         imageSource: testImage,
-        user: "",
+        user: "Sam",
         likeNumber: 10,
         commentNumber: 20,
         liked: false,
-        commented: false
+        commented: false,
+        timestamp: 1571163581361
     }
 ]
 
@@ -119,7 +132,7 @@ const styles = StyleSheet.create({
         height: 250,
         width: "100%",
         borderWidth: 1,
-        borderColor: "black"
+        borderColor: "black", 
     },
     personProfilePhoto: { 
         height: 50, width: 50, borderRadius: 25, backgroundColor: "grey", marginLeft: 8, marginRight: 8 }

@@ -22,7 +22,7 @@ class NewCommunityPost extends React.Component {
 
     constructor(props){
         super(props)
-        this.state={text:"This is place to write your post", imageSource:""}
+        this.state={text:"", imageSource:""}
     }
 
     componentDidMount = () => {
@@ -81,21 +81,46 @@ class NewCommunityPost extends React.Component {
     render(){
         return (
         <View>
-            <TextInput
-                style={{ height:300, borderColor: 'gray', borderWidth: 1 }}
+            <TextInput style={styles.posterSubject}>
+              Welcome to the community!
+
+            </TextInput>
+
+            <TextInput 
+                multiline            
+                style={styles.postContent}
                 onChangeText={text => this.onChangeText(text)}
                 value={this.state.text}
+                placeholder="This is the placeholder"
                 />
-            <Image source={this.state.imageSource} style={{width:100, height:100}}>
-
-            </Image>
-
+            <Image source={this.state.imageSource} style={{width:100, height:100}}/>
+            
+            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
+            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
+            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
             <Button title="Add photo of your pets" onPress={ this.pickImage }/>
 
         </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+  posterSubject: {
+    // height: 150,
+    fontSize:20,
+    paddingHorizontal:16,
+    marginTop: 20,
+    marginBottom: 20,
+    fontWeight:"bold",
+    alignItems:"flex-start"
+  },
+  postContent: {
+    paddingHorizontal:16,
+    fontSize:12,
+    height:300 
+  }
+})
 
 
 export default NewCommunityPost
