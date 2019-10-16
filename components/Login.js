@@ -1,8 +1,9 @@
 import React from 'react';
 import {
   StyleSheet, Text,
-  TextInput,  TouchableOpacity, View,
-  Button, ImageEditor,
+  TextInput, View,
+  AsyncStorage,
+  Button,
 } from 'react-native';
 import firebaseSvc from '../FirebaseSvc';
 import firebase from 'firebase';
@@ -38,17 +39,23 @@ class Login extends React.Component {
             id: userf.uid,
             email: userf.email,
             name: userf.displayName,
-         }
-         callback()
+        }
+        callback()
     }
 
     navigateToMain = ()=>{
-        this.props.navigation.navigate('Main');
+        this._signInAsync();
+        //this.props.navigation.navigate('Main');
     }
 
     loginSuccess =  () => {
         alert('Login Success!');
         this.setUserInfo(this.navigateToMain);
+    };
+
+    _signInAsync = async () => {
+        await AsyncStorage.setItem('userToken', global.currentUser.id);
+        this.props.navigation.navigate('App');
     };
     
     loginFailed = () => {
