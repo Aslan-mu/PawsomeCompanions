@@ -2,9 +2,9 @@ import React from 'react';
 import {
     StyleSheet, Text,
     TextInput, View,
-    Button, ImageEditor,
+    Button,
 } from 'react-native';
-import firebaseSvc from '../FirebaseSvc';
+import firebaseSvc from '../../FirebaseSvc';
   
 class CreateAccount extends React.Component {
     static navigationOptions = {

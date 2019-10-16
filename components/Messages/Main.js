@@ -2,7 +2,7 @@ import React from 'react';
 import {
   StyleSheet, Text, View, FlatList, Button,
 } from 'react-native';
-import firebaseSvc from '../FirebaseSvc';
+import firebaseSvc from '../../FirebaseSvc';
 
 
 class Main extends React.Component {

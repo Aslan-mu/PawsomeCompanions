@@ -23,15 +23,19 @@ import { createStackNavigator } from 'react-navigation-stack'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
-import Login from './components/Login';
-import CreateAccount from './components/CreateAccount';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
+
+import Login from './components/UpdateProfile/Login';
+import CreateAccount from './components/UpdateProfile/CreateAccount';
 import Referral from './components/UpdateProfile/Referral';
 import PetSittingPreference from './components/UpdateProfile/PetSittingPreference';
-import Main from './components/Main';
-import Chat from './components/Chat';
+
+import Main from './components/Messages/Main';
+import Chat from './components/Messages/Chat';
+
 import CommunityFeed from "./components/CommunityFeed/CommunityFeed";
 import NewCommunityPost from './components/CommunityFeed/NewCommunityPost';
+
 import PetSitting from "./components/PetSitting/PetSitting";
 
 import UserProfile from './components/Profile/UserProfile';
@@ -46,25 +50,27 @@ const petsittingStack = createStackNavigator({
 
 })
 
-const userprofilestack = createStackNavigator({
+const userprofileStack = createStackNavigator({
 	Profile: { screen: UserProfile }
+})
+
+const messageStack = createStackNavigator({
+	Main: { screen: Main },
+	Chat: { screen: Chat }
 })
 
 const loginAppNavigator = createStackNavigator({
 	Login: { screen: Login },
 	CreateAccount: { screen: CreateAccount },
-	Referral: { screen: Referral },
-	Main: { screen: Main },
-	Chat: { screen: Chat },
+    Referral: { screen: Referral },
+    PetSittingPreference: { screen: PetSittingPreference },
 });
 
 const tabNavigator = createBottomTabNavigator({
-	// Main: { screen: Main },
-	// Chat: { screen: Chat },
-	//Login: loginAppNavigator,
 	Feed: communityStack,
 	PetSitting: petsittingStack,
-	Profile: userprofilestack,
+	Messages: messageStack,
+	Profile: userprofileStack,
 })
 
 export default createAppContainer(createSwitchNavigator({

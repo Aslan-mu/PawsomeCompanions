@@ -12,10 +12,10 @@ const options = {
     title: 'Select Post',
     customButtons: [{ name: 'Pawesome', title: 'Choose Photo from Facebook' }],
     storageOptions: {
-      skipBackup: true,
-      path: 'images',
+        skipBackup: true,
+        path: 'images',
     },
-  };
+};
   
 
 class NewCommunityPost extends React.Component {
@@ -45,21 +45,20 @@ class NewCommunityPost extends React.Component {
             // console.log('Response = ', response);
           
             if (response.didCancel) {
-              console.log('User cancelled image picker');
+                console.log('User cancelled image picker');
             } else if (response.error) {
-              console.log('ImagePicker Error: ', response.error);
+                console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
-              console.log('User tapped custom button: ', response.customButton);
+                console.log('User tapped custom button: ', response.customButton);
             } else {
-              const source = { uri: response.uri };
+                const source = { uri: response.uri };
           
-              // You can also display the image using data:
-              // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+                // You can also display the image using data:
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
           
-              this.setState({
-                imageSource: source,
-              });
-            //   console.log(source)
+                this.setState({
+                    imageSource: source,
+                });
             }
           });
     }
@@ -72,7 +71,7 @@ class NewCommunityPost extends React.Component {
                 style={{ height:300, borderColor: 'gray', borderWidth: 1 }}
                 onChangeText={text => this.onChangeText(text)}
                 value={this.state.text}
-                />
+            />
             <Image source={this.state.imageSource} style={{width:100, height:100}}>
 
             </Image>

@@ -148,6 +148,8 @@ class FirebaseSvc {
 
     updateReferral = (referral) => this.refUser().doc(global.currentUser.id).update({referral: referral})
 
+    updateImage = (url) => this.refUser().doc(global.currentUser.id).update({image: url})
+
     refOff() {
         this.refMessages().off();
     }
