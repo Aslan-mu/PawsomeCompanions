@@ -14,9 +14,7 @@ class PetSittingPreference extends React.Component {
         referral: '',
     };
   
-  
     onChangeTextReferral = referral => this.setState({ referral });
-  
   
     render() {
         return (

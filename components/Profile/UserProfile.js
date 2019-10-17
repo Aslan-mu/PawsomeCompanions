@@ -2,11 +2,11 @@ import React from 'react';
 import {
   StyleSheet, 
   Text, 
+  Image,
   View, 
   Button, 
   AsyncStorage,
 } from 'react-native';
-
 
 class UserProfile extends React.Component {
 
@@ -19,15 +19,10 @@ class UserProfile extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        console.log(global.currentUser);
+        this.state.imageSource = global.currentUser.imageSource;
         this.state.name = global.currentUser.name;
         this.state.id = global.currentUser.id;
         this.state.email = global.currentUser.email;
-        console.log(global.currentUser.name)
-        console.log(global.currentUser.id)
-        console.log(global.currentUser.email)
-        console.log(this.state)
     }
 
     _signOutAsync = async () => {
@@ -35,10 +30,12 @@ class UserProfile extends React.Component {
         this.props.navigation.navigate('Login');
     };
 
-
     render() {
         return (
             <View>
+                <View style={{alignItems: 'center'}}>
+                    <Image source={this.state.imageSource} style={styles.image}></Image>
+                </View>
                 <Text style={styles.title}>Hi, {this.state.name}</Text>
                 <Text style={styles.title}>Your Email: {this.state.email} </Text>
                 <Text style={styles.title}>Your User Id: {this.state.id} </Text>
@@ -59,6 +56,12 @@ const styles = StyleSheet.create({
         marginLeft: offset,
         fontSize: offset,
     },
+    image: {
+        width:100, 
+        height:100,
+        marginLeft: offset,
+        marginTop: offset,
+    }
 });
   
 export default UserProfile;

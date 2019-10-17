@@ -5,7 +5,7 @@ import {
   AsyncStorage,
   Button,
 } from 'react-native';
-import firebaseSvc from '../FirebaseSvc';
+import firebaseSvc from '../../FirebaseSvc';
 import firebase from 'firebase';
 
 class Login extends React.Component {
@@ -45,7 +45,6 @@ class Login extends React.Component {
 
     navigateToMain = ()=>{
         this._signInAsync();
-        //this.props.navigation.navigate('Main');
     }
 
     loginSuccess =  () => {
