@@ -3,10 +3,11 @@ import {
     StyleSheet, Text,
     TextInput, View,
     Button, ImageEditor, ScrollView, 
-    Image 
+    Image
 } from "react-native"
 
 import ImagePicker from 'react-native-image-picker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const options = {
     title: 'Select Post',
@@ -80,7 +81,7 @@ class NewCommunityPost extends React.Component {
 
     render(){
         return (
-        <View>
+        <View style={{padding:12}}>
             <TextInput style={styles.posterSubject}>
               Welcome to the community!
 
@@ -93,13 +94,25 @@ class NewCommunityPost extends React.Component {
                 value={this.state.text}
                 placeholder="This is the placeholder"
                 />
-            <Image source={this.state.imageSource} style={{width:100, height:100}}/>
-            
-            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
-            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
-            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
-            <Button title="Add photo of your pets" onPress={ this.pickImage }/>
-
+            {/* <Image source={this.state.imageSource} style={{width:100, height:100}}/> */}
+            <View style={{height: 1, width: "100%", backgroundColor:"#C9C9C9", marginBottom: 10}}>
+            </View>
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+                <Icon name="camera-alt" size={24} style={{marginRight:30}}></Icon>
+                <Button title="Add photo / video" color={"black"} onPress={ this.pickImage }/>
+            </View> 
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+                <Icon name="local-offer" size={24} style={{marginRight:30}}></Icon>
+                <Button title="Tag People" color={"black"} onPress={ this.pickImage }/>
+            </View> 
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+                <Icon name="camera-alt" size={24} style={{marginRight:30}}></Icon>
+                <Button title="Topic ategory" color={"black"} onPress={ this.pickImage }/>
+            </View> 
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+                <Icon name="navigation" size={24} style={{marginRight:30}}></Icon>
+                <Button title="Add location" color={"black"} onPress={ this.pickImage }/>
+            </View> 
         </View>
         )
     }
@@ -109,14 +122,14 @@ const styles = StyleSheet.create({
   posterSubject: {
     // height: 150,
     fontSize:20,
-    paddingHorizontal:16,
+    paddingHorizontal:4,
     marginTop: 20,
     marginBottom: 20,
     fontWeight:"bold",
     alignItems:"flex-start"
   },
   postContent: {
-    paddingHorizontal:16,
+    paddingHorizontal:4,
     fontSize:12,
     height:300 
   }

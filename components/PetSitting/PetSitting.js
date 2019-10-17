@@ -32,7 +32,7 @@ export default class PetSitting extends React.Component {
                     This is the pet sitting page
                 </Text> */}
 
-                <Button title="Request new pet owners" style={{width:"80%"}} onPress={()=>{this.props.navigation.navigate("SearchSitterList")}}/>
+                <Button title="Request new pet owners" style={{width:"80%"}} onPress={()=>{this.props.navigation.navigate("PetSittingBasicInformation")}}/>
                 
                 {/* User link */}
 

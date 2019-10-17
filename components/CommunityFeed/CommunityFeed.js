@@ -114,7 +114,7 @@ class CommunityFeed extends React.Component {
     }
 
     addPost = (newPost) => {
-        this.setState({feedData: this.state.feedData.concat([newPost])})
+        this.setState({feedData: [newPost].concat(this.state.feedData)})
     }
 
     render = () => {
