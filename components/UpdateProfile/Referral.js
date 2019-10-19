@@ -33,18 +33,18 @@ class Referral extends React.Component {
   
     onChangeTextReferral = referral => {
         firebase.firestore().collection('Community').doc(referral || " ").get()
-            .then(doc => {
-                if (!doc.exists) {
-                    this.setState({ communityName:'' });
-                    console.log('No such Community!');
-                } else {
-                    const {name} = doc.data();
-                    this.setState({ communityName:name });
-                }
-            })
-            .catch(err => {
-                console.log('Error getting document', err);
-            });
+        .then(doc => {
+            if (!doc.exists) {
+                this.setState({ communityName:'' });
+                console.log('No such Community!');
+            } else {
+                const {name} = doc.data();
+                this.setState({ communityName:name });
+            }
+        })
+        .catch(err => {
+            console.log('Error getting document', err);
+        });
         this.setState({ referral });
     }
 
@@ -105,14 +105,13 @@ class Referral extends React.Component {
         await firebaseSvc.updateReferral(this.state.referral);
         await firebase.storage().ref('UserImage').child(global.currentUser.id).getDownloadURL().then(function(url) {
             firebaseSvc.updateImage(url);
-          }).catch(function(error) {
+        }).catch(function(error) {
             // A full list of error codes is available at
             // https://firebase.google.com/docs/storage/web/handle-errors
             switch (error.code) {
                 
             }
-          });
-        
+        });
         this.props.navigation.navigate("PetSittingPreference")
     }
   

@@ -30,7 +30,7 @@ import CreateAccount from './components/UpdateProfile/CreateAccount';
 import Referral from './components/UpdateProfile/Referral';
 import PetSittingPreference from './components/UpdateProfile/PetSittingPreference';
 
-import Main from './components/Messages/Main';
+import ChatMain from './components/Messages/ChatMain';
 import Chat from './components/Messages/Chat';
 
 import CommunityFeed from "./components/CommunityFeed/CommunityFeed";
@@ -55,7 +55,7 @@ const userprofileStack = createStackNavigator({
 })
 
 const messageStack = createStackNavigator({
-	Main: { screen: Main },
+	ChatMain: { screen: ChatMain },
 	Chat: { screen: Chat }
 })
 
@@ -72,6 +72,18 @@ const tabNavigator = createBottomTabNavigator({
 	Messages: messageStack,
 	Profile: userprofileStack,
 })
+
+messageStack.navigationOptions = ({ navigation }) => {
+
+    let tabBarVisible = true;
+    let routeName = navigation.state.routes[navigation.state.index].routeName
+    if ( routeName == 'Chat' ) {
+        tabBarVisible = false
+    }
+    return {
+        tabBarVisible,
+    }
+}
 
 export default createAppContainer(createSwitchNavigator({
     AuthLoading: AuthLoadingScreen,
