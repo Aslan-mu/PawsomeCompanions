@@ -6,10 +6,8 @@
 	<string>For the community post</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>FontAwesome5_Regular.ttf</string>
-		<string>FontAwesome5_Brand.ttf</string>
-		<string>FontAwesome5_Solid.ttf</string>
 		<string>MaterialIcons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

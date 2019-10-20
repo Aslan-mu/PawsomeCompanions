@@ -2,6 +2,7 @@ import firebase from 'firebase';
 import config from './firebaseConfig';
 import 'firebase/firestore';
 
+
 class FirebaseSvc {
     constructor() {
         if (!firebase.apps.length) {
@@ -36,12 +37,76 @@ class FirebaseSvc {
         return firebase.firestore().collection('Users');
     }
 
+    getAllUserData(callback){
+        return this.refUser().get().then( snapshot =>{
+            callback(snapshot)
+        }).catch(
+            err => {
+                console.log("Error getting documents", err)
+            }
+        )
+    }
+
     refMessages() {
         return firebase.database().ref('Messages');
     }
 
     refRequests() {
         return firebase.firestore().collection('Requests');
+    }
+
+    refPetSittingSessions() {
+        return firebase.firestore().collection("PetSittingSessions")
+    }
+
+    async querySpecificUser (userID) {
+        const snapShot = await this.refUser().doc(userID).get().catch(error => console.warn(error))
+        return snapShot
+    }
+
+    async queryInstructionsForOneSession(docID) {
+        const snapshot = await this.refPetSittingSessions().doc(docID).collection("Instructions").get()
+        return snapshot 
+    }
+
+    async queryPetSittingSessionForOneOwner(ownerID){
+        const snapshot = await this.refPetSittingSessions().where( "owner" ,"==", ownerID ).get().catch(error => console.log)
+        console.log("receive data")
+        
+        if (!snapshot){
+            return []
+        }
+        const docs = []
+
+        snapshot.forEach(doc =>{
+            console.log("owner")
+            console.log(doc.data())
+            docs.push(doc)
+        })
+        return docs        
+    }
+
+    async queryPetSittingSessionForOneSitter(sitterID){
+        const snapshot = await this.refPetSittingSessions().where( "sitter" ,"==", sitterID ).get().catch(error => console.log)
+        
+        if (!snapshot){
+            return []
+        }
+        const docs = []
+
+        snapshot.forEach(doc =>{
+            console.log("sitter")
+            console.log(doc.data())
+            docs.push(doc)
+        })
+        return docs        
+    }
+
+
+    async addNewInstructionToTheSession(sessionId , newInstruction){
+        this.refPetSittingSessions().doc(sessionId).collection("Instructions").add(
+            {...newInstruction, timestamp:this.timestamp}).
+            then().catch(console.warn)
     }
 
     createAccount = async (user,success_callback, failed_callback) => {
@@ -58,9 +123,7 @@ class FirebaseSvc {
                     email: userf.email,
                     name: userf.displayName,
                 };
-                // use random-generated id as key: 
-                // firebase.firestore().collection('Users').add(userinfo);
-
+                // use random-generated id as key:
                 // use user_id as key: 
                 firebase.firestore().collection('Users').doc(userinfo.id).set(userinfo);
                 global.currentUser = userinfo;
@@ -128,6 +191,43 @@ class FirebaseSvc {
         return message;
     };
 
+    refRequests(){
+        return firebase.firestore().collection("Requests");
+    }
+
+    addNewRequest(requestData){
+        // Need more tweaks
+        const newRequestDataPushed = {
+            ...requestData,
+            accepted: false,
+            owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`),
+            sitter: firebase.firestore().doc(`/Users/${requestData.sitter}`),
+            timestamp: firebase.firestore.Timestamp.now(),
+            haveRead: false
+        }
+        this.refRequests().add(newRequestDataPushed).then(()=>{console.log("New request created")})
+    }
+
+    refPosts() {
+        return firebase.firestore().collection('CommunityPosts');
+    }
+
+    refPostOn = (callback) =>{
+        this.refPosts().onSnapshot(
+            querySnapShot =>{
+                querySnapShot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                        callback(change.doc.data())
+                      }
+                }) 
+            }
+        )
+        
+        // on('child_added', snapshot =>{
+        //     callback(snapshot.val())
+        // })
+    }
+
     refOn = (name,chatWith,_idTo,callback) => {
         this.refMessages()
         .on('child_added',snapshot => {
@@ -151,6 +251,18 @@ class FirebaseSvc {
             this.refMessages().push(message);
         }
     };
+
+    setNewPost = ( newPost ) =>{
+        console.log("push to firestore")
+        
+        const {text, numberOfLike, numberOfComment, image} = newPost
+        const newPostToFirestore = {
+            text,
+            numberOfComment, numberOfLike, image, timestamp: this.timestamp,
+        }
+        console.log(newPostToFirestore)
+        this.refPosts().add(newPostToFirestore)
+    } 
 
     updateReferral = (referral) => this.refUser().doc(global.currentUser.id).update({referral: referral})
 

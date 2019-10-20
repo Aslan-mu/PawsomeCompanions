@@ -13,10 +13,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		247A197A4538BD821FD4FFF0 /* libPods-PawsomeCompanions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 55919103CFAB4D0D4CAAD936 /* libPods-PawsomeCompanions.a */; };
-		2827FDA8234FA22300116C20 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2827FDA5234FA22300116C20 /* FontAwesome5_Solid.ttf */; };
-		2827FDA9234FA22300116C20 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2827FDA6234FA22300116C20 /* FontAwesome5_Regular.ttf */; };
-		2827FDAA234FA22300116C20 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2827FDA7234FA22300116C20 /* FontAwesome5_Brands.ttf */; };
-		2827FDAD234FA49100116C20 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2827FDAC234FA49100116C20 /* MaterialIcons.ttf */; };
+		28253CB2235A267B002684F0 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28253CB1235A267B002684F0 /* MaterialCommunityIcons.ttf */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -57,10 +54,8 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PawsomeCompanions/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PawsomeCompanions/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = PawsomeCompanions/main.m; sourceTree = "<group>"; };
-		2827FDA5234FA22300116C20 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
-		2827FDA6234FA22300116C20 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
-		2827FDA7234FA22300116C20 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
-		2827FDAC234FA49100116C20 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialIcons.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		28253CB1235A267B002684F0 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialCommunityIcons.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		2827FDB123525E9400116C20 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* PawsomeCompanions-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PawsomeCompanions-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* PawsomeCompanions-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PawsomeCompanions-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ABF71B54836EAE2C9966BD /* Pods-PawsomeCompanionsTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PawsomeCompanionsTests.release.xcconfig"; path = "Target Support Files/Pods-PawsomeCompanionsTests/Pods-PawsomeCompanionsTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -147,10 +142,8 @@
 		2827FDAB234FA46500116C20 /* Font */ = {
 			isa = PBXGroup;
 			children = (
-				2827FDAC234FA49100116C20 /* MaterialIcons.ttf */,
-				2827FDA7234FA22300116C20 /* FontAwesome5_Brands.ttf */,
-				2827FDA6234FA22300116C20 /* FontAwesome5_Regular.ttf */,
-				2827FDA5234FA22300116C20 /* FontAwesome5_Solid.ttf */,
+				28253CB1235A267B002684F0 /* MaterialCommunityIcons.ttf */,
+				2827FDB123525E9400116C20 /* MaterialIcons.ttf */,
 			);
 			path = Font;
 			sourceTree = "<group>";
@@ -363,12 +356,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2827FDA8234FA22300116C20 /* FontAwesome5_Solid.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				2827FDAD234FA49100116C20 /* MaterialIcons.ttf in Resources */,
-				2827FDA9234FA22300116C20 /* FontAwesome5_Regular.ttf in Resources */,
+				28253CB2235A267B002684F0 /* MaterialCommunityIcons.ttf in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				2827FDAA234FA22300116C20 /* FontAwesome5_Brands.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,7 +20,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import { createStackNavigator } from 'react-navigation-stack'
-import { createBottomTabNavigator } from 'react-navigation-tabs'
+import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
 import AuthLoadingScreen from './components/AuthLoadingScreen';
@@ -37,17 +37,25 @@ import CommunityFeed from "./components/CommunityFeed/CommunityFeed";
 import NewCommunityPost from './components/CommunityFeed/NewCommunityPost';
 
 import PetSitting from "./components/PetSitting/PetSitting";
+import PetSittingBasicInformation from "./components/PetSitting/PetSittingBasicInformation"
+import SearchSitterList from "./components/PetSitting/SearchSitterScreen"
+import RequestSentConfirmation from "./components/PetSitting/RequestSentConfirmation"
 
 import UserProfile from './components/Profile/UserProfile';
+import PetSittingInstruction from "./components/PetSittingInstructions/PetSittingInstructions"
+import AddNewInstruction from "./components/PetSittingInstructions/AddNewInstruction"
 
 const communityStack = createStackNavigator({
 	Feed: {screen: CommunityFeed},
-	NewCommunityPost: {screen: NewCommunityPost}
+	// Feed: {screen: RequestSentConfirmation},
+	NewCommunityPost: {screen: NewCommunityPost},
 })
 
 const petsittingStack = createStackNavigator({
-  	PetSitting: PetSitting
-
+//   PetSitting: PetSitting,
+  PetSittingBasicInformation: PetSittingBasicInformation,
+  SearchSitterList: SearchSitterList,
+  RequestSentConfirmation: {screen: RequestSentConfirmation}
 })
 
 const userprofileStack = createStackNavigator({
@@ -66,11 +74,22 @@ const loginAppNavigator = createStackNavigator({
     PetSittingPreference: { screen: PetSittingPreference },
 });
 
+const petSittingInstructionStack = createStackNavigator({
+	PetSittingInstruction: PetSittingInstruction,
+	AddNewInstruction : AddNewInstruction
+})
+
+const petSittingTab = createMaterialTopTabNavigator({
+	PetSittingToday: petSittingInstructionStack
+})
+
 const tabNavigator = createBottomTabNavigator({
 	Feed: communityStack,
 	PetSitting: petsittingStack,
 	Messages: messageStack,
 	Profile: userprofileStack,
+	PetsittingInstruction: petSittingInstructionStack
+	// PetSittingInstruction: petSittingTab
 })
 
 messageStack.navigationOptions = ({ navigation }) => {
