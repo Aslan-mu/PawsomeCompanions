@@ -55,6 +55,60 @@ class FirebaseSvc {
         return firebase.firestore().collection('Requests');
     }
 
+    refPetSittingSessions() {
+        return firebase.firestore().collection("PetSittingSessions")
+    }
+
+    async querySpecificUser (userID) {
+        const snapShot = await this.refUser().doc(userID).get().catch(error => console.warn(error))
+        return snapShot
+    }
+
+    async queryInstructionsForOneSession(docID) {
+        const snapshot = await this.refPetSittingSessions().doc(docID).collection("Instructions").get()
+        return snapshot 
+    }
+
+    async queryPetSittingSessionForOneOwner(ownerID){
+        const snapshot = await this.refPetSittingSessions().where( "owner" ,"==", ownerID ).get().catch(error => console.log)
+        console.log("receive data")
+        
+        if (!snapshot){
+            return []
+        }
+        const docs = []
+
+        snapshot.forEach(doc =>{
+            console.log("owner")
+            console.log(doc.data())
+            docs.push(doc)
+        })
+        return docs        
+    }
+
+    async queryPetSittingSessionForOneSitter(sitterID){
+        const snapshot = await this.refPetSittingSessions().where( "sitter" ,"==", sitterID ).get().catch(error => console.log)
+        
+        if (!snapshot){
+            return []
+        }
+        const docs = []
+
+        snapshot.forEach(doc =>{
+            console.log("sitter")
+            console.log(doc.data())
+            docs.push(doc)
+        })
+        return docs        
+    }
+
+
+    async addNewInstructionToTheSession(sessionId , newInstruction){
+        this.refPetSittingSessions().doc(sessionId).collection("Instructions").add(
+            {...newInstruction, timestamp:this.timestamp}).
+            then().catch(console.warn)
+    }
+
     createAccount = async (user,success_callback, failed_callback) => {
         firebase.auth()
         .createUserWithEmailAndPassword(user.email, user.password)

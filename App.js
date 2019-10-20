@@ -20,7 +20,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import { createStackNavigator } from 'react-navigation-stack'
-import { createBottomTabNavigator } from 'react-navigation-tabs'
+import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
 import AuthLoadingScreen from './components/AuthLoadingScreen';
@@ -79,12 +79,17 @@ const petSittingInstructionStack = createStackNavigator({
 	AddNewInstruction : AddNewInstruction
 })
 
+const petSittingTab = createMaterialTopTabNavigator({
+	PetSittingToday: petSittingInstructionStack
+})
+
 const tabNavigator = createBottomTabNavigator({
 	Feed: communityStack,
 	PetSitting: petsittingStack,
 	Messages: messageStack,
 	Profile: userprofileStack,
 	PetsittingInstruction: petSittingInstructionStack
+	// PetSittingInstruction: petSittingTab
 })
 
 messageStack.navigationOptions = ({ navigation }) => {

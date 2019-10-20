@@ -16,18 +16,65 @@ export default class PetSittingInstructions extends React.Component {
     dummyData = {
         startDate: new Date(Date.now()),
         endDate: new Date(Date.now()),
-        petName: "",
-        sitter: "",
-        owner: "",
+        petName: "Griffey",
+        sitter: {
+            id: "",
+            name: "Aslan"
+        },
+        owner: {
+            id: "d04fkhh2nVNPp62PYHEOM5cGv872",
+            name: "JJ"
+        },
         service:"Drop-in Visit",
         instructions: [
-            "Walk Griffey in the morning. I usually walk him around the block",
-            "Feed Griffey after the walk"
+            {
+                instruction: "Walk Griffey in the morning. I usually walk him around the block",
+                repeat: "",
+                reminder: "",
+                date: ""
+            }, 
+            {
+                instruction: "Feed Griffey after the walk",
+                repeat: "",
+                reminder: "",
+                date:""
+            }
         ]
     }
-
+    
     constructor(props) {
         super(props)
+        this.state = {
+            loading: true,
+            startDate: new Date(Date.now()),
+            endDate: new Date(Date.now()),
+            petName: "Griffey",
+            sessionID:"",
+            sitter: {
+                id: "",
+                name: "Aslan"
+            },
+            owner: {
+                id: "d04fkhh2nVNPp62PYHEOM5cGv872",
+                name: "JJ"
+            },
+            service:"Drop-in Visit",
+            instructions: [
+                {
+                    instruction: "Walk Griffey in the morning. I usually walk him around the block",
+                    repeat: "",
+                    reminder: "",
+                    date: ""
+                }, 
+                {
+                    instruction: "Feed Griffey after the walk",
+                    repeat: "",
+                    reminder: "",
+                    date:""
+                }
+            
+            ]
+        }
     }
     
     static navigationOptions =  ({navigation}) => ({
@@ -35,40 +82,126 @@ export default class PetSittingInstructions extends React.Component {
         headerRight: <Button title="Next" onPress={ () => {navigation.navigate("AddNewInstruction")} }>  </Button>
     })
 
+    componentDidMount = async () => {
+        const ownerResult = await firebaseSvc.queryPetSittingSessionForOneOwner(global.currentUser.id)
+        const sitterResult = await firebaseSvc.queryPetSittingSessionForOneSitter(global.currentUser.id)
+        
+        if (ownerResult.length > 0) {
+            const sessionID = ownerResult[0].id
+            const {startDate, endDate, owner, sitter, service, pet} = ownerResult[0].data()
+            const snapshots = await firebaseSvc.queryInstructionsForOneSession(ownerResult[0].id)
+            const instructions = []
+            snapshots.forEach( 
+                (doc) => {
+                    const data = doc.data()
+                    instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
+                }
+            )
+            
+            const sitterDoc = await firebaseSvc.querySpecificUser(sitter)
+            this.setState({
+                sessionID,
+                startDate: new Date(startDate.seconds * 1000),
+                endDate: new Date(endDate.seconds * 1000),
+                owner: {
+                    id: owner,
+                    name: global.currentUser.name
+                },
+                sitter: sitterDoc.data(),
+                service,
+                petName: pet,
+                instructions,
+                loading: false  
+            })  
+        }
+
+        if (sitterResult.length > 0){
+            const sessionID = ownerResult[0].id
+            const {startDate, endDate, owner, sitter, service, pet} = sitterResult[0].data()
+            const snapshots = await firebaseSvc.queryInstructionsForOneSession(sitterResult[0].id)
+            const instructions = []
+            snapshots.forEach( 
+                (doc) => {
+                    const data = doc.data()
+                    instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
+                }
+            )
+
+            const ownerDoc = await firebaseSvc.querySpecificUser(owner)
+            this.setState({
+                sessionID,
+                startDate: new Date(startDate.seconds * 1000),
+                endDate: new Date(endDate.seconds * 1000),
+                owner: ownerDoc.data(),
+                sitter:{
+                    name: global.currentUser.name,
+                    id: global.currentUser.id
+                },
+                service,
+                petName: pet,
+                instructions,
+                loading: false   
+            })
+        }
+
+    }
+
+    addANewInstruction = ({instruction, repeat, reminder, date}) => {
+        const newObj = {
+            instruction,
+            repeat, 
+            reminder,
+            date
+        }
+
+        firebaseSvc.addNewInstructionToTheSession(this.state.sessionID, newObj)
+        this.setState({
+            instructions: [newObj].concat(this.state.instructions)
+        })
+    }
+
     render = () => {
+        const isOwner = global.currentUser.id === this.state.owner.id
+
         return <ScrollView style={{padding: 12}}>
-            <Text style={{marginVertical: 12}}>
+            <Text style={{marginVertical: 12, marginHorizontal: 12}}>
                 Oct 7
             </Text>
 
+            {
+                this.state.loading ?  <Text>
+                    
+                </Text>
+                 : 
             <View style={styles.petSittingCard}>
-                <View style={{height: 112}}>
+                <View style={{height: 112}}>                    
                     <View style={{flexDirection: "row", alignItems: "center", marginRight: 12}} >
-                        <Text style={styles.petSittingTitle}>
-                            Pet Sitting for Ashley
-                        </Text>
+                        {
+                            isOwner ? 
+                                <Text style={styles.petSittingTitle}>
+                                    {this.state.sitter.name} pet sitting for you
+                                </Text> :
+                                <Text style={styles.petSittingTitle}>
+                                    Pet Sitting for {this.state.owner.name}
+                                </Text> 
+                        }
 
                         <View style={styles.personProfilePhoto}>
 
                         </View>
 
-                        <TouchableOpacity style={styles.messageButton}>
-                            <Text style={styles.messageButtonText}>
-                                Message
-                            </Text>
-                        </TouchableOpacity>
                     </View>
 
                     <View>
                         <View style={{flexDirection: "row", marginBottom: 4}}>
                             <Icon name="pets" size={16}></Icon>
-                            <Text style={styles.dogNameText}> One dog </Text>
+                            <Text style={styles.dogNameText}> {this.state.petName} </Text>
                         </View>
 
                         <View style={{flexDirection: "row", marginBottom: 4}}>
                             <MaterialCommunityIcon name="calendar" size={16}></MaterialCommunityIcon>
                             <Text style={styles.dogNameText}> 
-                            {`${this.dummyData.startDate.getMonth() + 1} ${this.dummyData.startDate.getDay()}, ${this.dummyData.startDate.getFullYear()} to ${this.dummyData.endDate.getMonth() + 1} ${this.dummyData.endDate.getDay()}, ${this.dummyData.endDate.getFullYear()}`}
+                            {`${this.state.startDate.getMonth() + 1} ${this.state.startDate.getDay()}, ${this.state.startDate.getFullYear()} to ${this.state.endDate.getMonth() + 1} ${this.state.endDate.getDay()}, ${this.state.endDate.getFullYear()}`}
                             </Text>
                         </View>
 
@@ -81,43 +214,44 @@ export default class PetSittingInstructions extends React.Component {
 
                 </View>
 
-                <View style={styles.divider}/>
+                {/* <View style={styles.divider}/> */}
 
                 <View style={{marginVertical: 12}}>
                     <Text style={styles.instructionTitle}>
                         Instructions
                     </Text>
 
-                    {this.dummyData.instructions.map( instruction => {
-                        console.log(instruction)
-                        return (<View style={{flexDirection: "row", alignItems: "flex-start", marginBottom: 12}}>   
+                    {this.state.instructions.map( (instruction, i) => {
+                        return (<View style={{flexDirection: "row", alignItems: "flex-start", marginBottom: 12}} key={i}>   
                             <Icon name={"repeat"} size={16}/>
                             <Text style={styles.instructionTextLine}>
-                                {instruction}
+                                {instruction.instruction}
                             </Text>
                         </View>
                         )
                     }) }
-
-                    {/* <View style={{flexDirection: "row", alignItems: "flex-start"}}>   
-                        <Icon name={"repeat"} size={16}/>
-                        <Text style={styles.instructionTextLine}>
-                            Feed Griffey
-                        </Text>
-
-                    </View> */}
                 </View>
                 {
-                    global.currentUser.id === this.dummyData.owner ? 
-                    <Button title={"Add new instruction"}>
-                    
-                    </Button>
+                    isOwner ? 
+                    <TouchableOpacity style={styles.addNewInstructionButton} onPress = { () =>{this.props.navigation.navigate("AddNewInstruction", {addANewInstruction: this.addANewInstruction}); console.log(this.addANewInstruction)}}>
+                        <Icon name={"add"} size={14} color={"#fff"}>
+
+                        </Icon>
+                        <Text style={styles.addInstructionButtonText}>
+                            Add instruction
+                        </Text>
+                    </TouchableOpacity>
                     : 
                     <View/>
                 }
             </View>
+            }
         </ScrollView>
     }
+}
+
+const colors = {
+    pastelOrange : "rgb(249,149,88)"
 }
 
 const styles = StyleSheet.create({
@@ -125,13 +259,13 @@ const styles = StyleSheet.create({
         // width: 349,
         height: 420,
         backgroundColor: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.07)",
-        shadowOffset: {
-          width: 0,
-          height: 0
-        },
-        shadowRadius: 10,
-        shadowOpacity: 1,
+        // shadowColor: "rgba(0, 0, 0, 0.07)",
+        // shadowOffset: {
+        //   width: 0,
+        //   height: 0
+        // },
+        // shadowRadius: 10,
+        // shadowOpacity: 1,
         padding: 12
     },
     divider : {
@@ -139,11 +273,20 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#e0ddea"
     },
+    addNewInstructionButton: {
+        justifyContent: "center",
+        alignItems:"center",
+        flexDirection:"row",
+        width: 147,
+        height: 34,
+        borderRadius: 6,
+        backgroundColor: colors.pastelOrange
+    }, 
     petSittingTitle: {
         // width: 150,
         // height: 14,
         // fontFamily: "SFProText",
-        fontSize: 15,
+        fontSize: 17,
         fontWeight: "500",
         fontStyle: "normal",
         letterSpacing: 0,
@@ -151,6 +294,7 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems: "center",
         marginRight: 100,
+        marginBottom: 8
     },
     personProfilePhoto: { 
         height: 24, 
@@ -190,10 +334,10 @@ const styles = StyleSheet.create({
         color: "#1a051d"
     }, 
     instructionTitle: { 
-        width: 87,
+        // width: 87,
         height: 18,
         // fontFamily: "SFProText",
-        fontSize: 15,
+        fontSize: 17,
         fontWeight: "500",
         fontStyle: "normal",
         letterSpacing: 0,
@@ -222,7 +366,16 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         letterSpacing: 0,
         color: "#1a051d"
+    }, 
+    addInstructionButtonText : {
+        width: 104,
+        height: 18,
+        // fontFamily: "SFProText",
+        fontSize: 13,
+        fontWeight: "500",
+        fontStyle: "normal",
+        lineHeight: 18,
+        letterSpacing: 0,
+        color: "#fbfbfb"
     }
-
-
 })

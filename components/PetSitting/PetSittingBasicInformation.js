@@ -114,10 +114,11 @@ export default class PetSittingBasicInformation extends React.Component {
     }
 
     homeSittingButtonPress = () => {
-
+        
     }
 
     render() {
+
         // const {show, date, mode} = this.state
         return (
             <View>
