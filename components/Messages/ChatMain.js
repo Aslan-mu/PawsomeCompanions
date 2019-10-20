@@ -9,6 +9,7 @@ function Item({ data, navigation }) {
         <TouchableOpacity
             onPress={
                 () => navigation.navigate('Chat', {
+                    request: data.request,
                     chatWith: data.name,
                     _idTo: data._idTo,
             })} >
@@ -29,7 +30,7 @@ function Item({ data, navigation }) {
 function RequestOrMessage({ data }){
     if (data.request){
         return(
-            <Text style = {styles.message}>[New Request!]</Text>
+            <Text style = {styles.newRequest}>[New Request!]</Text>
         )
     }else{
         return (
@@ -80,7 +81,7 @@ class ChatMain extends React.Component {
             requestRef = firebaseSvc.refRequests().where("sitter", "==", "/Users/"+userId).get().then((snapshot)=>{
                 returnDoc = false;
                 snapshot.forEach((doc) =>{
-                    if (doc.data().owner == "/Users/" + owner){
+                    if (doc.data().owner == "/Users/" + owner && !doc.data().accepted){
                         returnDoc = doc
                     }
                 });
@@ -113,7 +114,6 @@ class ChatMain extends React.Component {
                     }
                     //fetch message between u and your friend
                     const data = await this.fetchLastMessage(id,global.currentUser.id).then(async(data) => {
-
                         temp.msg.createdAt = data.createdAt;
                         temp.msg.text = data.text;
 
@@ -121,8 +121,6 @@ class ChatMain extends React.Component {
                         temp.request = returnDoc
                         var joined = this.state.data.concat(temp);
                         this.setState({data: joined})
-                        console.log("!!!!!!!!!!!!!!!!!!!!!!!")
-                        console.log(this.state.avatar)
                     })
                 }
             });
@@ -196,6 +194,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
         //padding:5,
+      },
+      newRequest:{
+        color: "#6979F8",
+        fontSize:16,
+        alignSelf:'flex-start',
+        marginTop:3,
+        marginLeft:10
       },
       message:{
         fontSize:16,
