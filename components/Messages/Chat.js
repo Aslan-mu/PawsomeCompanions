@@ -18,6 +18,7 @@ class Chat extends React.Component{
             name: global.currentUser.name,
             chatWith: this.props.navigation.state.params.chatWith,
         }
+        this.state.request = this.props.navigation.state.params.request
     }
     static navigationOptions = ({ navigation }) => ({
         title: (navigation.state.params || {}).chatWith || 'Chat!',
@@ -28,6 +29,7 @@ class Chat extends React.Component{
             name:"",
             chatWith:""
         },
+        request:false,
         messages: [],
     };
 
@@ -41,34 +43,50 @@ class Chat extends React.Component{
         };
     }
 
-    acceptButton(){
+    acceptButton = () => {
+        requestRef = firebaseSvc.refRequests().doc(this.state.request.id).update({accepted: true})
+        this.setState({
+            request:false
+        })
+        alert("Accepted the request!")
         console.log("accept");
     }
 
-    declineButton(){
+    declineButton = () => {
+        this.setState({
+            request:false
+        })
+        alert("Declined the request!")
         console.log("decline");
     }
 
     toolBar =  () => {
-        return (
-            <View style = {styles.viewStyle}>
-                <Text>12313</Text>
-                <View style = {styles.rowContainer}>
-                    <TouchableOpacity
-                        style={styles.buttonText}
-                        onPress={ this.acceptButton }
-                    >
-                        <Text> Accept </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.buttonText}
-                        onPress={ this.declineButton }
-                    >
-                        <Text> Decline </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-    )}
+        if (this.state.request){
+            request = this.state.request.data();
+            return (
+                <View style = {styles.viewStyle}>
+                    <Text>You got a new request from {this.state.user.chatWith}!</Text>
+                    <Text>From {(new Date(request.startDate.seconds*1000).toLocaleString())} to {(new Date(request.endDate.seconds*1000).toLocaleString())}!</Text>
+                    <View style = {styles.rowContainer}>
+                        <TouchableOpacity
+                            style={styles.buttonText}
+                            onPress={ this.acceptButton }
+                        >
+                            <Text> Accept </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.buttonText}
+                            onPress={ this.declineButton }
+                        >
+                            <Text> Decline </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>)
+        }
+        else{
+            return(null)
+        }
+    }
 
     render() {
         return (
@@ -114,7 +132,9 @@ class Chat extends React.Component{
 const offset = 16;
 const styles = StyleSheet.create({
     viewStyle: {
-        backgroundColor: 'red'
+        backgroundColor: '#D5E9FA',
+        alignItems: 'center',
+        padding:3,
     },
     title: {
         marginTop: offset,
@@ -136,9 +156,10 @@ const styles = StyleSheet.create({
         fontSize: 42,
     },
     rowContainer:{
-        justifyContent: 'space-between',
+        //flex: 1,
+        //justifyContent: 'space-between',
         flexDirection: 'row',
-        //padding:5,
+        padding:5,
     },
     image: {
         width:100, 
