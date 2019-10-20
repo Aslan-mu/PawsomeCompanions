@@ -39,18 +39,23 @@ import NewCommunityPost from './components/CommunityFeed/NewCommunityPost';
 import PetSitting from "./components/PetSitting/PetSitting";
 import PetSittingBasicInformation from "./components/PetSitting/PetSittingBasicInformation"
 import SearchSitterList from "./components/PetSitting/SearchSitterScreen"
+import RequestSentConfirmation from "./components/PetSitting/RequestSentConfirmation"
 
 import UserProfile from './components/Profile/UserProfile';
+import PetSittingInstruction from "./components/PetSittingInstructions/PetSittingInstructions"
+import AddNewInstruction from "./components/PetSittingInstructions/AddNewInstruction"
 
 const communityStack = createStackNavigator({
 	Feed: {screen: CommunityFeed},
-	NewCommunityPost: {screen: NewCommunityPost}
+	// Feed: {screen: RequestSentConfirmation},
+	NewCommunityPost: {screen: NewCommunityPost},
 })
 
 const petsittingStack = createStackNavigator({
-  PetSitting: PetSitting,
+//   PetSitting: PetSitting,
   PetSittingBasicInformation: PetSittingBasicInformation,
-  SearchSitterList: SearchSitterList
+  SearchSitterList: SearchSitterList,
+  RequestSentConfirmation: {screen: RequestSentConfirmation}
 })
 
 const userprofileStack = createStackNavigator({
@@ -69,11 +74,17 @@ const loginAppNavigator = createStackNavigator({
     PetSittingPreference: { screen: PetSittingPreference },
 });
 
+const petSittingInstructionStack = createStackNavigator({
+	PetSittingInstruction: PetSittingInstruction,
+	AddNewInstruction : AddNewInstruction
+})
+
 const tabNavigator = createBottomTabNavigator({
 	Feed: communityStack,
 	PetSitting: petsittingStack,
 	Messages: messageStack,
 	Profile: userprofileStack,
+	PetsittingInstruction: petSittingInstructionStack
 })
 
 export default createAppContainer(createSwitchNavigator({

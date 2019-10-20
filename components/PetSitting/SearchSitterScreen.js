@@ -8,6 +8,7 @@ import {
 } from "react-native"
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import firebaseSvc from "../../FirebaseSvc";
 
 const DATA = [
   {
@@ -65,16 +66,16 @@ const ALEX = {
 }
 
 const PETSITTING_DATA = [
-  { title: "Previous Pet Sitting", data: [BEN, JOSH] },
-  { title: "Most Active Pet Sitting", data: [LEO, KYLIE] },
-  { title: "Community Member", data: [SARAH, ALEX] }
+  { title: "Search Result", data: [] },
+  // { title: "Most Active Pet Sitting", data: [LEO, KYLIE] },
+  // { title: "Community Member", data: [SARAH, ALEX] }
 ]
 
-function NameTag({ name, deleteAName }) {
+function NameTag({ name, deleteAName, id }) {
   return (
-    <View style={{ borderRadius: 4, marginVertical: 4, marginLeft: 4, paddingHorizontal: 4, height: 30, backgroundColor: "rgba(0, 148, 255, 0.2)", flexDirection: "row", alignItems: "center" }}>
+    <View style={{ borderRadius: 4, marginVertical: 4, marginLeft: 4, paddingHorizontal: 4, height: 30, backgroundColor: "transparent", flexDirection: "row", alignItems: "center",  }}>
       <Text style={{ fontSize: 16 }}> {name} </Text>
-      <TouchableHighlight underlayColor="white" onPress={() => deleteAName(name)}>
+      <TouchableHighlight underlayColor="white" onPress={() => deleteAName(name, id)}>
         <Icon name={"close"} size={16}></Icon>
       </TouchableHighlight>
       
@@ -82,16 +83,16 @@ function NameTag({ name, deleteAName }) {
   )
 }
 
-function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked }) {
+function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked, numOfRecommendations, item }) {
 
   const [checked, setChecked] = React.useState(false)
   const onChecked = () => {
     if (checked) {
       // delete from a list 
-      deleteAName(title)
+      deleteAName(item.name, item.userID)
     } else {
       // add from a list 
-      addANewSitterCandidate(title)
+      addANewSitterCandidate(item.name, item.userID)
     }
     console.log("Item clicked")
     setChecked(!checked)
@@ -100,14 +101,13 @@ function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked }) {
   React.useEffect(() => {
     setChecked(sitterChecked)
   })
-
   return (
     <TouchableHighlight onPress={onChecked} underlayColor="white">
       <View style={styles.item}>
         <View style={styles.personProfilePhoto}></View>
         <View>
-            <Text style={styles.sitterName}>{title}</Text>
-            <Text style={styles.peopleRecommended}>5 People Recommended</Text>
+            <Text style={styles.sitterName}>{item.name}</Text>
+            <Text style={styles.peopleRecommended}>{item.numOfRecommendations} People Recommended</Text>
         </View>
         
         <View style={{marginLeft:30}}>
@@ -137,7 +137,11 @@ function SearchBar(props) {
   return (
     <View style={{ height: 44, padding: 8, flexDirection: "row", flexWrap: "wrap", alignItems:"center", marginBottom: 4, marginTop: 8 }}>
       <Text style={styles.toLabel}> To: </Text>
-      {sitterList.map((n, i) => <NameTag name={n} key={n + i} deleteAName={props.deleteAName}></NameTag>)}
+      {sitterList.map((s, i) => {
+        console.log(s)
+        return (<NameTag name={s.name} id={s.id} key={s.id + i} deleteAName={props.deleteAName}></NameTag>)
+        }
+      )}
     </View>
   )
 }
@@ -154,33 +158,84 @@ export default class SearchSitterList extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { sitterList: [] }
+    const passedInData = props.navigation.state.params
+    console.log("passed in data")
+    // console.log(props.navigation.state)
+    this.state = { 
+      sitterList: [], 
+      requestData:{
+        startDate: props.navigation.getParam("startDate", "default"),
+        endDate: passedInData.endDate,
+        additionalNotes: passedInData.additionalNotes,
+        service: passedInData.service
+      }, 
+      petSittingData: PETSITTING_DATA
+    }
   }
 
   static navigationOptions = ({ navigation }) => ({
     title: "Search",
-    headerRight: (<Button title="Next"></Button>)
+    headerRight: (<Button title="Send" onPress={() => {navigation.state.params.handleSave(); navigation.navigate("RequestSentConfirmation")}}></Button>)
   })
-
-  addANewSitterCandidate = (name) => {
-    this.setState({ sitterList: this.state.sitterList.concat([name]) })
+  
+  addANewSitterCandidate = (name, id) => {
+    // The problem now is that I need to link the id with the name
+    this.setState({ sitterList: this.state.sitterList.concat([{name, id}]) })
+    console.log("add sitter list")
+    console.log(this.state.sitterList)
   }
 
-  deleteAName = (name) => {
-    this.setState({ sitterList: this.state.sitterList.filter(s => s !== name) })
+  deleteAName = (name, id) => {
+    this.setState({ sitterList: this.state.sitterList.filter(u => u.id !== id) })
   }
 
+  componentDidMount = () => {
+    const navigation= this.props.navigation 
+
+    this.props.navigation.setParams({
+      handleSave: () => {  
+        this.state.sitterList.forEach( sitter=>
+            firebaseSvc.addNewRequest({...this.state.requestData, sitter: sitter.id})
+          
+        )
+        
+      }
+    })
+
+    firebaseSvc.getAllUserData((snapshot) =>{
+        let incomingUserData = []
+        let count = 0
+        snapshot.forEach(doc => {
+          const userData = doc.data()
+          const id = doc.id
+          incomingUserData.push({
+            name: userData.name,
+            image: userData.image,
+            numOfRecommendations:count,
+            community: "",
+            livingDistance: "",
+            userID: id
+          })
+          count +=1 
+        })
+
+        incomingUserData.sort( d => -1 * d.numOfRecommendations )
+        // console.log(incomingUserData[0].numOfRecommendations)
+        this.setState({petSittingData: [{ title: "Search Result", data: incomingUserData}]})
+    })
+}
   render = () => {
+
     return (
       <View>
         {/* I cna have a search bar here*/}
         {/* Two micro-interaction methods */}
         <SearchBar sitterList={this.state.sitterList} deleteAName={this.deleteAName} ></SearchBar>
         <SectionList
-          sections={PETSITTING_DATA}
+          sections={this.state.petSittingData}
           keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => <Item title={item.name} addANewSitterCandidate={this.addANewSitterCandidate}
-            deleteAName={this.deleteAName} sitterChecked={this.state.sitterList.includes(item.name)} />}
+          renderItem={({ item }) => <Item item={item} title={item.name} numOfRecommendations={item.numOfRecommendations} addANewSitterCandidate={this.addANewSitterCandidate}
+            deleteAName={this.deleteAName} sitterChecked={this.state.sitterList.map(s => s.id).includes(item.userID)} />}
           renderSectionHeader={({ section: { title } }) => <Header title={title}></Header>}
         >
         </SectionList>
@@ -195,8 +250,8 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   item: {
-    margin: 20,
-    width: 355,
+    marginHorizontal: 20,
+    // width: 355,
     height: 79,
     borderRadius: 4,
     backgroundColor: "#ffffff",
@@ -253,7 +308,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1
   }, 
   sitterName : {
-    width: 38,
+    // width: 38,
     height: 22,
     // fontFamily: "SFProText",
     fontSize: 17,
