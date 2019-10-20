@@ -51,6 +51,9 @@ class FirebaseSvc {
         return firebase.database().ref('Messages');
     }
 
+    refRequests() {
+        return firebase.firestore().collection('Requests');
+    }
 
     createAccount = async (user,success_callback, failed_callback) => {
         firebase.auth()
@@ -95,37 +98,39 @@ class FirebaseSvc {
 
     parse = (name,chatWith,_idTo,snapshot) => {
         var message = null;
-        const { timestamp: numberStamp, text, user } = snapshot.val();
+        const { createdAt, text, user } = snapshot.val();
         var userf = global.currentUser.id;
         if(user && user._id == userf && user._idTo == _idTo){
             const { key: id } = snapshot;
             const { key: _id } = snapshot;
-            const timestamp = new Date(numberStamp);
+            const timestamp = new Date(createdAt);
             message = {
                 id,
                 _id,
-                timestamp,
+                createdAt: timestamp,
                 text,
                 user: {
                     _id:userf,
                     _idTo:_idTo,
                     name:name,
+                    avatar:user.avatar
                 }
             };
         }
         if(user && user._id && user._idTo == userf && user._id == _idTo){
             const { key: id } = snapshot;
             const { key: _id } = snapshot;
-            const timestamp = new Date(numberStamp);
+            const timestamp = new Date(createdAt);
             message = {
                 id,
                 _id,
-                timestamp,
+                createdAt: timestamp,
                 text,
                 user: {
                     _id:_idTo,
                     _idTo:userf,
                     name:chatWith,
+                    avatar:user.avatar
                 }
             };
         }

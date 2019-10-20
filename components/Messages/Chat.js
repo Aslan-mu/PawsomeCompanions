@@ -1,5 +1,6 @@
 import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 
 import firebaseSvc from '../../FirebaseSvc';
 
@@ -36,12 +37,50 @@ class Chat extends React.Component{
             chatWith: this.props.navigation.state.params.chatWith,
             _idTo: this.props.navigation.state.params._idTo,
             _id: global.currentUser.id, // need for gifted-chat
+            avatar: global.currentUser.imageSource.uri || null,
         };
     }
+
+    acceptButton(){
+        console.log("accept");
+    }
+
+    declineButton(){
+        console.log("decline");
+    }
+
+    toolBar =  () => {
+        return (
+            <View style = {styles.viewStyle}>
+                <Text>12313</Text>
+                <View style = {styles.rowContainer}>
+                    <TouchableOpacity
+                        style={styles.buttonText}
+                        onPress={ this.acceptButton }
+                    >
+                        <Text> Accept </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.buttonText}
+                        onPress={ this.declineButton }
+                    >
+                        <Text> Decline </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+    )}
 
     render() {
         return (
         <GiftedChat
+            alwaysShowSend = {true}
+            //renderUsernameOnMessage = {true}
+            showUserAvatar = {true}
+            //renderFooter = {this.toolBar}
+            //renderActions = {this.toolBar}
+            renderChatFooter = {this.toolBar}
+            scrollToBottom = {true}
+            timeFormat = {"YYYY-MM-DD LT"}
             messages = {this.state.messages}
             onSend = {firebaseSvc.send}
             user = {this.user}
@@ -64,12 +103,49 @@ class Chat extends React.Component{
                     messages: GiftedChat.append(previousState.messages, message),
                 }))
             }
-            }
-        );
+        });
     }
     componentWillUnmount() {
         firebaseSvc.refOff();
     }
 }
+
+
+const offset = 16;
+const styles = StyleSheet.create({
+    viewStyle: {
+        backgroundColor: 'red'
+    },
+    title: {
+        marginTop: offset,
+        marginLeft: offset,
+        fontSize: offset,
+    },
+    nameInput: {
+        height: offset * 3,
+        margin: offset,
+        paddingHorizontal: offset,
+        borderColor: '#111111',
+        borderWidth: 1,
+        fontSize: offset,
+    },
+    buttonText: {
+        height: offset * 3,
+        color: 'red',
+        marginLeft: offset,
+        fontSize: 42,
+    },
+    rowContainer:{
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        //padding:5,
+    },
+    image: {
+        width:100, 
+        height:100,
+        marginLeft: offset,
+        marginTop: offset,
+    }
+});
 
 export default Chat;

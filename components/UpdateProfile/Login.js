@@ -33,13 +33,25 @@ class Login extends React.Component {
         );
     };
   
-    setUserInfo = (callback) => {
-        userf = firebase.auth().currentUser
-        global.currentUser = {
-            id: userf.uid,
-            email: userf.email,
-            name: userf.displayName,
-        }
+    setUserInfo = async (callback) => {
+        userId = firebase.auth().currentUser.uid;
+        await firebase.firestore().collection('Users').doc(userId).get()
+        .then(doc => {
+            if (!doc.exists) {
+                console.log('No User Find!');
+            } else {
+                const {name, email, image} = doc.data();
+                global.currentUser = {
+                    id: userId,
+                    email: email,
+                    name: name,
+                    imageSource: {uri: image},
+                }
+            }
+        })
+        .catch(err => {
+            console.log('Error getting document', err);
+        });
         callback()
     }
 
@@ -62,10 +74,8 @@ class Login extends React.Component {
         alert('Login failure. Please try again.');
     };
   
-  
     onChangeTextEmail = email => this.setState({ email });
     onChangeTextPassword = password => this.setState({ password });
-  
   
     render() {
         return (
