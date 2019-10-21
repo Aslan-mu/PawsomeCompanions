@@ -79,72 +79,119 @@ export default class PetSittingInstructions extends React.Component {
     
     static navigationOptions =  ({navigation}) => ({
         title: "Pet Sitting",
-        headerRight: <Button title="Next" onPress={ () => {navigation.navigate("AddNewInstruction")} }>  </Button>
+        // headerRight: <Button title="Next" onPress={ () => {navigation.navigate("AddNewInstruction")} }>  </Button>
     })
 
     componentDidMount = async () => {
-        const ownerResult = await firebaseSvc.queryPetSittingSessionForOneOwner(global.currentUser.id)
-        const sitterResult = await firebaseSvc.queryPetSittingSessionForOneSitter(global.currentUser.id)
-        
-        if (ownerResult.length > 0) {
-            const sessionID = ownerResult[0].id
-            const {startDate, endDate, owner, sitter, service, pet} = ownerResult[0].data()
-            const snapshots = await firebaseSvc.queryInstructionsForOneSession(ownerResult[0].id)
-            const instructions = []
-            snapshots.forEach( 
-                (doc) => {
-                    const data = doc.data()
-                    instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
-                }
-            )
+                    
+        firebaseSvc.refPetSittingSessions().where("owner", "==", global.currentUser.id).onSnapshot(
+              querySnapshot => {
+                  querySnapshot.docChanges().forEach(async change =>{
+                      if (change.type === 'added'){
+                        const ownerResult = change.doc
+                        console.log("owner")
+                        console.log(change.doc.id)
+                        const sessionID = ownerResult.id
+                        const {startDate, endDate, owner, sitter, service, pet} = ownerResult.data()
+                        const snapshots = await firebaseSvc.queryInstructionsForOneSession(ownerResult.id)
+                        const instructions = []
+                        snapshots.forEach( 
+                            (doc) => {
+                                const data = doc.data()
+                                instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
+                            }
+                        )
+                        const sitterDoc = await firebaseSvc.querySpecificUser(sitter)
+                        this.setState({
+                            sessionID,
+                            startDate: new Date(startDate.seconds * 1000),
+                            endDate: new Date(endDate.seconds * 1000),
+                            owner: {
+                                id: owner,
+                                name: global.currentUser.name
+                            },
+                            sitter: sitterDoc.data(),
+                            service,
+                            petName: pet,
+                            instructions,
+                            loading: false  
+                        })  
+                      }
+                  })
+              }
+        )
+
+        querySnapshot => {
+            firebaseSvc.refPetSittingSessions().where("sitter", "==", global.currentUser.id).onSnapshot(
+                querySnapshot.docChanges().forEach(async change =>{
+                    if (change.type === 'added'){
+                        console.log("sitter")
+                        console.log(change.doc.id)
+                        const sitterResult = change.doc
+                        const sessionID = sitterResult.id
+                        const {startDate, endDate, owner, sitter, service, pet} = sitterResult.data()
+                        const snapshots = await firebaseSvc.queryInstructionsForOneSession(sitterResult.id)
+                        const instructions = []
+                        snapshots.forEach( 
+                            (doc) => {
+                                const data = doc.data()
+                                instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
+                            }
+                        )
             
-            const sitterDoc = await firebaseSvc.querySpecificUser(sitter)
-            this.setState({
-                sessionID,
-                startDate: new Date(startDate.seconds * 1000),
-                endDate: new Date(endDate.seconds * 1000),
-                owner: {
-                    id: owner,
-                    name: global.currentUser.name
-                },
-                sitter: sitterDoc.data(),
-                service,
-                petName: pet,
-                instructions,
-                loading: false  
-            })  
+                        const ownerDoc = await firebaseSvc.querySpecificUser(owner)
+                        setState({
+                            sessionID,
+                            startDate: new Date(startDate.seconds * 1000),
+                            endDate: new Date(endDate.seconds * 1000),
+                            owner: ownerDoc.data(),
+                            sitter:{
+                                name: global.currentUser.name,
+                                id: global.currentUser.id
+                            },
+                            service,
+                            petName: pet,
+                            instructions,
+                            loading: false   
+                        })
+                    }
+                })
+            )}
         }
+        
+        // const ownerResult = await firebaseSvc.queryPetSittingSessionForOneOwner(global.currentUser.id)
+        // const sitterResult = await firebaseSvc.queryPetSittingSessionForOneSitter(global.currentUser.id)
 
-        if (sitterResult.length > 0){
-            const sessionID = ownerResult[0].id
-            const {startDate, endDate, owner, sitter, service, pet} = sitterResult[0].data()
-            const snapshots = await firebaseSvc.queryInstructionsForOneSession(sitterResult[0].id)
-            const instructions = []
-            snapshots.forEach( 
-                (doc) => {
-                    const data = doc.data()
-                    instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
-                }
-            )
+        // if (sitterResult.length > 0){
+        //     const sessionID = ownerResult[0].id
+        //     const {startDate, endDate, owner, sitter, service, pet} = sitterResult[0].data()
+        //     const snapshots = await firebaseSvc.queryInstructionsForOneSession(sitterResult[0].id)
+        //     const instructions = []
+        //     snapshots.forEach( 
+        //         (doc) => {
+        //             const data = doc.data()
+        //             instructions.push({id: doc.id, instruction: data.instruction, repeat: data.repeat, reminder: data.reminder})
+        //         }
+        //     )
 
-            const ownerDoc = await firebaseSvc.querySpecificUser(owner)
-            this.setState({
-                sessionID,
-                startDate: new Date(startDate.seconds * 1000),
-                endDate: new Date(endDate.seconds * 1000),
-                owner: ownerDoc.data(),
-                sitter:{
-                    name: global.currentUser.name,
-                    id: global.currentUser.id
-                },
-                service,
-                petName: pet,
-                instructions,
-                loading: false   
-            })
-        }
+        //     const ownerDoc = await firebaseSvc.querySpecificUser(owner)
+        //     this.setState({
+        //         sessionID,
+        //         startDate: new Date(startDate.seconds * 1000),
+        //         endDate: new Date(endDate.seconds * 1000),
+        //         owner: ownerDoc.data(),
+        //         sitter:{
+        //             name: global.currentUser.name,
+        //             id: global.currentUser.id
+        //         },
+        //         service,
+        //         petName: pet,
+        //         instructions,
+        //         loading: false   
+        //     })
+        // }
 
-    }
+    // }
 
     addANewInstruction = ({instruction, repeat, reminder, date}) => {
         const newObj = {

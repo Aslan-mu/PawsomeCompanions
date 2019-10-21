@@ -43,8 +43,21 @@ class Chat extends React.Component{
         };
     }
 
-    acceptButton = () => {
+    acceptButton =  async() => {
         requestRef = firebaseSvc.refRequests().doc(this.state.request.id).update({accepted: true})
+        const doc =  await firebaseSvc.refRequests().doc(this.state.request.id)
+        const data = doc.data()
+        
+        // Create session
+        firebaseSvc.addNewSession({
+            startDate: data.startDate,
+            endDate: data.endDate,
+            owner: data.owner,
+            sitter: data.sitter,
+            pet: 'Griffey',
+            service: data.service,
+        })
+        
         this.setState({
             request:false
         })

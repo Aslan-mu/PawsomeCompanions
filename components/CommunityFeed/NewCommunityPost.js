@@ -50,14 +50,13 @@ class NewCommunityPost extends React.Component {
                         imageSource,
                         numberOfLike: 0,
                         numberOfComment: 0,
-                        user:global.currentUser.name,
+                        owner:global.currentUser.id,
                         image: url,
                         petCategory
                     }
                     firebaseSvc.setNewPost(newPost)
                 }).catch(function(error) {
                 // A full list of error codes is available at
-                // https://firebase.google.com/docs/storage/web/handle-errors
                     console.log(error)
                     switch (error.code) {
                         
@@ -76,7 +75,7 @@ class NewCommunityPost extends React.Component {
 
     static navigationOptions = ({navigation}) => ({
         title: 'New Community Post',
-        headerRight: <Button title="Post" onPress={ () =>{navigation.state.params.handleSave(); }}/>
+        headerRight: <Button title="Post" onPress={ () =>{navigation.state.params.handleSave(); navigation.navigate("Feed") }}/>
     });
 
     pickImage = () => {
@@ -190,7 +189,6 @@ class NewCommunityPost extends React.Component {
                     case firebase.storage.TaskState.RUNNING: // or 'running'
                         console.log('Upload is running');
                         break;
-
                 }
                 /* noop but you can track the progress here */
             },  error => console.log,
