@@ -182,7 +182,7 @@ class FirebaseSvc {
                     _id:_idTo,
                     _idTo:userf,
                     name:chatWith,
-                    avatar:user.avatar
+                    //avatar:user.avatar
                 }
             };
         }

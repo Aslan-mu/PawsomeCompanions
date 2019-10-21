@@ -12,7 +12,8 @@ function Item({ data, navigation }) {
                     request: data.request,
                     chatWith: data.name,
                     _idTo: data._idTo,
-            })} >
+                })
+            } >
             <View style = {styles.box}>
                 <Image style={styles.image} source={{uri: data.avatar}}/>
                 <View style = {styles.columnContainer}>
@@ -45,6 +46,7 @@ class ChatMain extends React.Component {
     };
 
     state = {
+        render:"",
         data:[],
         messages:[]
     };
@@ -55,47 +57,113 @@ class ChatMain extends React.Component {
         this.state.email = global.currentUser.email;
     }
 
-    fetchLastMessage = (chatWithId,userId) => {
-        return new Promise((resolve, reject) => {
-            messageRef = firebaseSvc.refMessages();
-            messageRef.on("value", function(snapshot) {
-                var data = {
-                    createdAt: 0,
-                    text: ""
-                };
-                snapshot.forEach(function(child) {
-                    if(((child.val().user._idTo == chatWithId && child.val().user._id == userId)
-                        ||( child.val().user._idTo == userId && child.val().user._id == chatWithId)) 
-                        && child.val().createdAt > data.createdAt){
-                        data.createdAt = child.val().createdAt;
-                        data.text = child.val().text;
-                    }
-                });
-                resolve(data)
+    // fetchLastMessage = (chatWithId,userId) => {
+    //     const setNewRequest = (newData) => {
+    //         this.setState({data: newData})
+    //     }
+    //     return new Promise((resolve, reject) => {
+    //         messageRef = firebaseSvc.refMessages();
+    //         messageRef.on("value", (snapshot) => {
+    //             var msg = {
+    //                 createdAt: 0,
+    //                 text: ""
+    //             };
+    //             snapshot.forEach((child) => {
+    //                 if(((child.val().user._idTo == chatWithId && child.val().user._id == userId)
+    //                     ||( child.val().user._idTo == userId && child.val().user._id == chatWithId)) 
+    //                     && child.val().createdAt > msg.createdAt){
+    //                     msg.createdAt = child.val().createdAt;
+    //                     msg.text = child.val().text;
+
+    //                     var data = this.state.data
+    //                     data.forEach((temp) => {
+    //                         if(temp._idTo == chatWithId){
+    //                             temp.msg = msg
+    //                             const dataOtherThanTemp = data.filter(te => te._idTo !== chatWithId)
+    //                             const newData = [temp].concat(dataOtherThanTemp)
+    //                             setNewRequest(newData) 
+    //                         }
+    //                     })
+    //                 }
+    //             });
+    //             resolve(msg)
+    //         });
+    //     });
+    // }
+
+    fetchLastMessage = () => {
+        const setNewRequest = (newData) => {
+            this.setState({data: newData})
+        }
+        userId = global.currentUser.id
+        messageRef = firebaseSvc.refMessages();
+        messageRef.on('child_added', snapshot => {
+            var msg = {
+                createdAt: 0,
+                text: ""
+            };
+            data = this.state.data
+            data.forEach((temp) => {
+                _idTo = temp._idTo;
+                if(((snapshot.val().user._idTo == _idTo && snapshot.val().user._id == userId)
+                ||( snapshot.val().user._idTo == userId && snapshot.val().user._id == _idTo)) 
+                && snapshot.val().createdAt > msg.createdAt){
+                    msg.createdAt = snapshot.val().createdAt;
+                    msg.text = snapshot.val().text;
+
+                    var dataAll = this.state.data
+                    temp.msg = msg
+
+                    const dataOtherThanTemp = dataAll.filter(te => te._idTo !== _idTo)
+                    const newData = [temp].concat(dataOtherThanTemp)
+                    setNewRequest(newData) 
+                }
             });
-        });
+        })
     }
 
-    fetchRequest = (owner, userId) => {
-        return new Promise((resolve, reject) => {
-            requestRef = firebaseSvc.refRequests().where("sitter", "==", userId).get().then((snapshot)=>{
-                returnDoc = false;
-                snapshot.forEach((doc) =>{
-                    if (doc.data().owner == owner && !doc.data().accepted){
-                        returnDoc = doc
-                    }
-                });
-                resolve(returnDoc)
-            })
-            .catch(function(error) {
-                console.log("Error getting documents: ", error);
+    fetchRequest = () => {
+        const setNewRequest = (newData) => {
+            this.setState({data: newData})
+        }
+
+        userId = global.currentUser.id
+
+        requestRef = firebaseSvc.refRequests().where("sitter", "==", userId).onSnapshot(querySnapshot => {
+            returnDoc = false;
+            querySnapshot.docChanges().forEach(change => {
+                if (change.type === 'added' && !change.doc.data().accepted) {
+                    var data = this.state.data
+                    data.forEach((temp)=>{
+                        owner = change.doc.data().owner;
+                        if(temp._idTo == owner){
+                            temp.request = change.doc
+                            const dataOtherThanTemp = data.filter(te => te._idTo !== owner)
+                            const newData = [temp].concat(dataOtherThanTemp)
+                            setNewRequest(newData) 
+                        }
+                    })
+                }
+                if (change.type === 'modified' && change.doc.data().accepted) {
+                    var data = this.state.data
+                    data.forEach((temp)=>{
+                        owner = change.doc.data().owner;
+                        if(temp._idTo == owner){
+                            temp.request = false
+                            const dataOtherThanTemp = data.filter(te => te._idTo !== owner)
+                            const newData = [temp].concat(dataOtherThanTemp)
+                            setNewRequest(newData) 
+                        }
+                    })
+                }
             });
-        });
+        })
     }
 
     componentDidMount = async() => {
-        itemsRef = firebaseSvc.refUser();
-        const response = await itemsRef.onSnapshot((Snapshot) => {
+        users = firebaseSvc.refUser();
+
+        const response = await users.onSnapshot((Snapshot) => {
             Snapshot.forEach(async(doc) => {
                 const {name, id, image} = doc.data()
                 //ignore self
@@ -104,27 +172,54 @@ class ChatMain extends React.Component {
                         id:doc.id,// used as unique id in the list
                         _idTo:id,
                         name: name,
-                        avatar: null,
-                        //avatar:image || null,
+                        //avatar: null,
+                        avatar:image || null,
                         msg: {
                             createdAt: 0,
-                            text:"Default"
+                            text:""
                         },
                         request:false
                     }
-                    //fetch message between u and your friend
-                    const data = await this.fetchLastMessage(id,global.currentUser.id).then(async(data) => {
-                        temp.msg.createdAt = data.createdAt;
-                        temp.msg.text = data.text;
-
-                        const returnDoc = await this.fetchRequest(id,global.currentUser.id);
-                        temp.request = returnDoc
-                        var joined = this.state.data.concat(temp);
-                        this.setState({data: joined})
-                    })
+                    var joined = this.state.data.concat(temp);
+                    this.setState({data: joined})
                 }
             });
         })
+
+        //fetch message between u and your friend
+        this.fetchLastMessage();
+        this.fetchRequest();
+      
+
+        // const response = await itemsRef.onSnapshot((Snapshot) => {
+        //     Snapshot.forEach(async(doc) => {
+        //         const {name, id, image} = doc.data()
+        //         //ignore self
+        //         if(id != global.currentUser.id){
+        //             var temp = {
+        //                 id:doc.id,// used as unique id in the list
+        //                 _idTo:id,
+        //                 name: name,
+        //                 avatar: null,
+        //                 //avatar:image || null,
+        //                 msg: {
+        //                     createdAt: 0,
+        //                     text:"Default"
+        //                 },
+        //                 request:false
+        //             }
+        //             //fetch message between u and your friend
+        //             const data = await this.fetchLastMessage(id,global.currentUser.id)
+        //             temp.msg.createdAt = data.createdAt;
+        //             temp.msg.text = data.text;
+
+        //             const returnDoc = await this.fetchRequest(id,global.currentUser.id);
+        //             temp.request = returnDoc
+        //             var joined = this.state.data.concat(temp);
+        //             this.setState({data: joined})
+        //         }
+        //     });
+        // })
 
         this.setState({
             name: global.currentUser.name,
