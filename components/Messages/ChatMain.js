@@ -78,10 +78,10 @@ class ChatMain extends React.Component {
 
     fetchRequest = (owner, userId) => {
         return new Promise((resolve, reject) => {
-            requestRef = firebaseSvc.refRequests().where("sitter", "==", "/Users/"+userId).get().then((snapshot)=>{
+            requestRef = firebaseSvc.refRequests().where("sitter", "==", userId).get().then((snapshot)=>{
                 returnDoc = false;
                 snapshot.forEach((doc) =>{
-                    if (doc.data().owner == "/Users/" + owner && !doc.data().accepted){
+                    if (doc.data().owner == owner && !doc.data().accepted){
                         returnDoc = doc
                     }
                 });

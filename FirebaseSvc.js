@@ -130,8 +130,6 @@ class FirebaseSvc {
             }, function(error) {
                 console.warn("Error update displayName.");
             });
-            
-            
         }, function(error) {
             //console.error("got error:" + typeof(error) + " string:" + error.message);
             alert("Create account failed. Error: " + error.message);
@@ -200,8 +198,10 @@ class FirebaseSvc {
         const newRequestDataPushed = {
             ...requestData,
             accepted: false,
-            owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`),
-            sitter: firebase.firestore().doc(`/Users/${requestData.sitter}`),
+            // owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`),
+            // sitter: firebase.firestore().doc(`/Users/${requestData.sitter}`),
+            owner: global.currentUser.id,
+            sitter: requestData.sitter,
             timestamp: firebase.firestore.Timestamp.now(),
             haveRead: false
         }
@@ -222,10 +222,6 @@ class FirebaseSvc {
                 }) 
             }
         )
-        
-        // on('child_added', snapshot =>{
-        //     callback(snapshot.val())
-        // })
     }
 
     refOn = (name,chatWith,_idTo,callback) => {
@@ -258,8 +254,9 @@ class FirebaseSvc {
         const {text, numberOfLike, numberOfComment, image} = newPost
         const newPostToFirestore = {
             text,
-            numberOfComment, numberOfLike, image, timestamp: this.timestamp,
+            numberOfComment, numberOfLike, image, timestamp: this.timestamp, owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`)
         }
+
         console.log(newPostToFirestore)
         this.refPosts().add(newPostToFirestore)
     } 
@@ -271,6 +268,21 @@ class FirebaseSvc {
     refOff() {
         this.refMessages().off();
     }
+    
+    async addNewSession(incomingSession) {
+        const newSession = await this.refPetSittingSessions().add(incomingSession)
+        newSession.collection("Instructions").add(
+            {
+                instruction: "add a new instruction",
+                timestamp: this.timestamp,
+                date: new Date(Date.now()),
+                repeat: "Everyday",
+            }
+        )
+    }
+    
+    
+
 }
 const firebaseSvc = new FirebaseSvc();
 export default firebaseSvc;
