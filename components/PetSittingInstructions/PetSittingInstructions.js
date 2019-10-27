@@ -121,10 +121,10 @@ export default class PetSittingInstructions extends React.Component {
               }
         )
 
-        querySnapshot => {
-            firebaseSvc.refPetSittingSessions().where("sitter", "==", global.currentUser.id).onSnapshot(
+        firebaseSvc.refPetSittingSessions().where("sitter", "==", global.currentUser.id).onSnapshot(
+            querySnapshot => {
                 querySnapshot.docChanges().forEach(async change =>{
-                    if (change.type === 'added'){
+                    if (change.type === 'added' || change.type==="modified"){
                         console.log("sitter")
                         console.log(change.doc.id)
                         const sitterResult = change.doc
@@ -140,7 +140,7 @@ export default class PetSittingInstructions extends React.Component {
                         )
             
                         const ownerDoc = await firebaseSvc.querySpecificUser(owner)
-                        setState({
+                        this.setState({
                             sessionID,
                             startDate: new Date(startDate.seconds * 1000),
                             endDate: new Date(endDate.seconds * 1000),
@@ -156,8 +156,9 @@ export default class PetSittingInstructions extends React.Component {
                         })
                     }
                 })
-            )}
+            })
         }
+        
         
         // const ownerResult = await firebaseSvc.queryPetSittingSessionForOneOwner(global.currentUser.id)
         // const sitterResult = await firebaseSvc.queryPetSittingSessionForOneSitter(global.currentUser.id)
@@ -212,7 +213,7 @@ export default class PetSittingInstructions extends React.Component {
 
         return <ScrollView style={{padding: 12}}>
             <Text style={{marginVertical: 12, marginHorizontal: 12}}>
-                Oct 7
+                Oct 21
             </Text>
 
             {
@@ -248,7 +249,7 @@ export default class PetSittingInstructions extends React.Component {
                         <View style={{flexDirection: "row", marginBottom: 4}}>
                             <MaterialCommunityIcon name="calendar" size={16}></MaterialCommunityIcon>
                             <Text style={styles.dogNameText}> 
-                            {`${this.state.startDate.getMonth() + 1} ${this.state.startDate.getDay()}, ${this.state.startDate.getFullYear()} to ${this.state.endDate.getMonth() + 1} ${this.state.endDate.getDay()}, ${this.state.endDate.getFullYear()}`}
+                            {`${this.state.startDate.getMonth() + 1}/${this.state.startDate.getDate()}/${this.state.startDate.getFullYear()} to ${this.state.endDate.getMonth() + 1}/${this.state.endDate.getDate()}/${this.state.endDate.getFullYear()}`}
                             </Text>
                         </View>
 
@@ -256,9 +257,7 @@ export default class PetSittingInstructions extends React.Component {
                             <Icon name="info" size={16}></Icon>
                             <Text style={styles.dogNameText}> Drop-in visit </Text>
                         </View>
-
                     </View>
-
                 </View>
 
                 {/* <View style={styles.divider}/> */}

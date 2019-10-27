@@ -1,8 +1,9 @@
 import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Button} from 'react-native';
 
 import firebaseSvc from '../../FirebaseSvc';
+import Icon from "react-native-vector-icons/MaterialIcons"
 
 // type Props = {
 //   name?: string,
@@ -22,6 +23,10 @@ class Chat extends React.Component{
     }
     static navigationOptions = ({ navigation }) => ({
         title: (navigation.state.params || {}).chatWith || 'Chat!',
+        headerLeft: <Button title="Messages" onPress={() => {
+            console.log(navigation.state.params)
+            navigation.getParam("restartListener")();navigation.goBack()} }> </Button>
+        
     });
 
     state = {
@@ -106,7 +111,7 @@ class Chat extends React.Component{
         <GiftedChat
             alwaysShowSend = {true}
             //renderUsernameOnMessage = {true}
-            showUserAvatar = {true}
+            // showUserAvatar = {true}
             //renderFooter = {this.toolBar}
             //renderActions = {this.toolBar}
             renderChatFooter = {this.toolBar}

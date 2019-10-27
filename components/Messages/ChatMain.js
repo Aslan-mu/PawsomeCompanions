@@ -4,15 +4,19 @@ import {
 } from 'react-native';
 import firebaseSvc from '../../FirebaseSvc';
 
-function Item({ data, navigation }) {
+function Item({ data, navigation, restartListener }) {
     return (
         <TouchableOpacity
             onPress={
-                () => navigation.navigate('Chat', {
-                    request: data.request,
-                    chatWith: data.name,
-                    _idTo: data._idTo,
-                })
+                () => {
+                    firebaseSvc.refOff()
+                    navigation.navigate('Chat', {
+                        request: data.request,
+                        chatWith: data.name,
+                        _idTo: data._idTo,
+                        restartListener: restartListener
+                    })
+                }
             } >
             <View style = {styles.box}>
                 <Image style={styles.image} source={{uri: data.avatar}}/>
@@ -39,6 +43,7 @@ function RequestOrMessage({ data }){
         )
     }
 }
+
 class ChatMain extends React.Component {
 
     static navigationOptions = {
@@ -98,6 +103,7 @@ class ChatMain extends React.Component {
         userId = global.currentUser.id
         messageRef = firebaseSvc.refMessages();
         messageRef.on('child_added', snapshot => {
+            console.log("message child added in the message")
             var msg = {
                 createdAt: 0,
                 text: ""
@@ -160,7 +166,13 @@ class ChatMain extends React.Component {
         })
     }
 
+    restartListener = () => {
+        this.fetchLastMessage();
+        this.fetchRequest();
+    }
+
     componentDidMount = async() => {
+        console.log("Chat main mounted")
         users = firebaseSvc.refUser();
 
         const response = await users.onSnapshot((Snapshot) => {
@@ -187,9 +199,9 @@ class ChatMain extends React.Component {
         })
 
         //fetch message between u and your friend
-        this.fetchLastMessage();
-        this.fetchRequest();
-      
+        // this.fetchLastMessage();
+        // this.fetchRequest();
+        this.restartListener()
 
         // const response = await itemsRef.onSnapshot((Snapshot) => {
         //     Snapshot.forEach(async(doc) => {
@@ -228,6 +240,7 @@ class ChatMain extends React.Component {
     }
 
     componentWillUnmount() {
+        console.log("Chat main unmounting")
         firebaseSvc.refOff();
     }
 
@@ -237,7 +250,7 @@ class ChatMain extends React.Component {
                 <FlatList
                     style={styles.container}
                     data={this.state.data}
-                    renderItem = {({ item }) => <Item data = { item } navigation = {this.props.navigation}/>}
+                    renderItem = {({ item }) => <Item data = { item } navigation = {this.props.navigation} restartListener={this.restartListener}/>}
                     keyExtractor={item => item.id}
                 />
             </View>

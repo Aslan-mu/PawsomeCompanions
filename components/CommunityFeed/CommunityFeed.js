@@ -146,7 +146,7 @@ class CommunityFeed extends React.Component {
 
     componentDidMount =() =>{
         this.props.navigation.setParams({addNewPost:this.addPost})
-        // firebaseSvc.refPostOn(this.parseSnapshot)
+        firebaseSvc.refPostOn(this.parseSnapshot)
     } 
 
     navigateToNewPage = () => {
