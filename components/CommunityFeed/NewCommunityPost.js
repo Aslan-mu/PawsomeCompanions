@@ -63,7 +63,17 @@ class NewCommunityPost extends React.Component {
                     }
                 });    
             }
-            await this.uploadImage(this.state.uriSource, this.state.imageID, uploadNewPostAndNavigate)
+            // await this.uploadImage(this.state.uriSource, this.state.imageID, uploadNewPostAndNavigate)
+            const newPost = {   
+                text: newText,
+                imageSource,
+                numberOfLike: 0,
+                numberOfComment: 0,
+                owner:global.currentUser.id,
+                image: "123445",
+                petCategory
+            }
+            await firebaseSvc.setNewPost(newPost)
         }})
     }
 

@@ -87,10 +87,10 @@ const tabNavigator = createBottomTabNavigator({
 	Feed: communityStack,
 	PetSitting: petsittingStack,
 	Messages: messageStack,
+	PetsittingInstruction: petSittingInstructionStack,
 	Profile: userprofileStack,
-	PetsittingInstruction: petSittingInstructionStack
 	// PetSittingInstruction: petSittingTab
-})
+}, {resetOnBlur: true})
 
 messageStack.navigationOptions = ({ navigation }) => {
 
@@ -103,6 +103,19 @@ messageStack.navigationOptions = ({ navigation }) => {
         tabBarVisible,
     }
 }
+
+communityStack.navigationOptions = ({ navigation }) => {
+
+    let tabBarVisible = true;
+    let routeName = navigation.state.routes[navigation.state.index].routeName
+    if ( routeName == 'NewCommunityPost' ) {
+        tabBarVisible = false
+    }
+    return {
+        tabBarVisible,
+    }
+}
+
 
 export default createAppContainer(createSwitchNavigator({
     AuthLoading: AuthLoadingScreen,
