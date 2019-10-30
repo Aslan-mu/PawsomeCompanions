@@ -169,7 +169,7 @@ class FirebaseSvc {
                     _id:userf,
                     _idTo:_idTo,
                     name:name,
-                    avatar:user.avatar
+                    // avatar:user.avatar
                 }
             };
         }
@@ -186,7 +186,7 @@ class FirebaseSvc {
                     _id:_idTo,
                     _idTo:userf,
                     name:chatWith,
-                    //avatar:user.avatar
+                    // avatar:user.avatar
                 }
             };
         }

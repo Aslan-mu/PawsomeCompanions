@@ -21,7 +21,7 @@ function Item({ data, navigation }) {
                 <View style = {styles.columnContainer}>
                     <View style = {styles.rowContainer}>
                         <Text style = {styles.username}>{data.name}</Text>
-                        <Text style = {styles.message}>{data.msg.createdAt == "" ?  null : (new Date(data.msg.createdAt.toDate())).toLocaleString('en-GB')}</Text>
+                        <Text style = {styles.message}>{data.msg.createdAt == null || data.msg.createdAt == "" ?  null : (new Date(data.msg.createdAt.toDate())).toLocaleString('en-GB')}</Text>
                     </View>
                     <RequestOrMessage data = { data } />
                 </View>
@@ -79,7 +79,7 @@ class ChatMain extends React.Component {
                     _idTo = temp._idTo;
                     if(((firstId == _idTo && secondId == userId)
                     ||( firstId == userId && secondId == _idTo)) 
-                    && (change.doc.data().createdAt > temp.msg.createdAt || temp.msg.createdAt == 0)){
+                    && (temp.msg.createdAt == "" || change.doc.data().createdAt > temp.msg.createdAt )){
                         msg.createdAt = change.doc.data().createdAt;
                         msg.text = change.doc.data().text;
     
