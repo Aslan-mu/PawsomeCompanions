@@ -51,6 +51,10 @@ class FirebaseSvc {
         return firebase.database().ref('Messages');
     }
 
+    refLastMessages() {
+        return firebase.firestore().collection('LastMessages');
+    }
+
     refRequests() {
         return firebase.firestore().collection('Requests');
     }
@@ -235,16 +239,28 @@ class FirebaseSvc {
         return firebase.database.ServerValue.TIMESTAMP;
     }
     
+    get timestampFireStore() {
+        return firebase.firestore.FieldValue.serverTimestamp()
+    }
+    
     // send the message to the Backend
     send = (messages) => {
         for (let i = 0; i < messages.length; i++) {
             const { text, user } = messages[i];
-            const message = {
+            const messageForChat = {
                 text,
                 user,
                 createdAt: this.timestamp,
             };
-            this.refMessages().push(message);
+            this.refMessages().push(messageForChat);
+
+            const messageForChatMain = {
+                text,
+                user,
+                createdAt: this.timestampFireStore,
+            };
+            this.refLastMessages().doc(user._id+"_"+user._idTo).set(messageForChatMain);
+            this.refLastMessages().doc(user._idTo+"_"+user._id).set(messageForChatMain);
         }
     };
 

@@ -4,17 +4,15 @@ import {
 } from 'react-native';
 import firebaseSvc from '../../FirebaseSvc';
 
-function Item({ data, navigation, restartListener }) {
+function Item({ data, navigation }) {
     return (
         <TouchableOpacity
             onPress={
                 () => {
-                    firebaseSvc.refOff()
                     navigation.navigate('Chat', {
                         request: data.request,
                         chatWith: data.name,
                         _idTo: data._idTo,
-                        restartListener: restartListener
                     })
                 }
             } >
@@ -23,7 +21,7 @@ function Item({ data, navigation, restartListener }) {
                 <View style = {styles.columnContainer}>
                     <View style = {styles.rowContainer}>
                         <Text style = {styles.username}>{data.name}</Text>
-                        <Text style = {styles.message}>{data.msg.createdAt == 0 ?  null : (new Date(data.msg.createdAt)).toLocaleString('en-GB')}</Text>
+                        <Text style = {styles.message}>{data.msg.createdAt == "" ?  null : (new Date(data.msg.createdAt.toDate())).toLocaleString('en-GB')}</Text>
                     </View>
                     <RequestOrMessage data = { data } />
                 </View>
@@ -62,69 +60,38 @@ class ChatMain extends React.Component {
         this.state.email = global.currentUser.email;
     }
 
-    // fetchLastMessage = (chatWithId,userId) => {
-    //     const setNewRequest = (newData) => {
-    //         this.setState({data: newData})
-    //     }
-    //     return new Promise((resolve, reject) => {
-    //         messageRef = firebaseSvc.refMessages();
-    //         messageRef.on("value", (snapshot) => {
-    //             var msg = {
-    //                 createdAt: 0,
-    //                 text: ""
-    //             };
-    //             snapshot.forEach((child) => {
-    //                 if(((child.val().user._idTo == chatWithId && child.val().user._id == userId)
-    //                     ||( child.val().user._idTo == userId && child.val().user._id == chatWithId)) 
-    //                     && child.val().createdAt > msg.createdAt){
-    //                     msg.createdAt = child.val().createdAt;
-    //                     msg.text = child.val().text;
-
-    //                     var data = this.state.data
-    //                     data.forEach((temp) => {
-    //                         if(temp._idTo == chatWithId){
-    //                             temp.msg = msg
-    //                             const dataOtherThanTemp = data.filter(te => te._idTo !== chatWithId)
-    //                             const newData = [temp].concat(dataOtherThanTemp)
-    //                             setNewRequest(newData) 
-    //                         }
-    //                     })
-    //                 }
-    //             });
-    //             resolve(msg)
-    //         });
-    //     });
-    // }
-
     fetchLastMessage = () => {
         const setNewRequest = (newData) => {
             this.setState({data: newData})
         }
         userId = global.currentUser.id
-        messageRef = firebaseSvc.refMessages();
-        messageRef.on('child_added', snapshot => {
-            console.log("message child added in the message")
-            var msg = {
-                createdAt: 0,
-                text: ""
-            };
-            data = this.state.data
-            data.forEach((temp) => {
-                _idTo = temp._idTo;
-                if(((snapshot.val().user._idTo == _idTo && snapshot.val().user._id == userId)
-                ||( snapshot.val().user._idTo == userId && snapshot.val().user._id == _idTo)) 
-                && snapshot.val().createdAt > msg.createdAt){
-                    msg.createdAt = snapshot.val().createdAt;
-                    msg.text = snapshot.val().text;
-
-                    var dataAll = this.state.data
-                    temp.msg = msg
-
-                    const dataOtherThanTemp = dataAll.filter(te => te._idTo !== _idTo)
-                    const newData = [temp].concat(dataOtherThanTemp)
-                    setNewRequest(newData) 
-                }
-            });
+        firebaseSvc.refLastMessages().onSnapshot(querySnapshot => {
+            querySnapshot.docChanges().forEach(change => {
+                console.log("change get!",change.doc.data())
+                var msg = {
+                    createdAt: "",
+                    text: ""
+                };
+                data = this.state.data
+                firstId = change.doc.id.split("_")[0]
+                secondId = change.doc.id.split("_")[1]
+                data.forEach((temp) => {
+                    _idTo = temp._idTo;
+                    if(((firstId == _idTo && secondId == userId)
+                    ||( firstId == userId && secondId == _idTo)) 
+                    && (change.doc.data().createdAt > temp.msg.createdAt || temp.msg.createdAt == 0)){
+                        msg.createdAt = change.doc.data().createdAt;
+                        msg.text = change.doc.data().text;
+    
+                        var dataAll = this.state.data
+                        temp.msg = msg
+    
+                        const dataOtherThanTemp = dataAll.filter(te => te._idTo !== _idTo)
+                        const newData = [temp].concat(dataOtherThanTemp)
+                        setNewRequest(newData) 
+                    }
+                });
+            })
         })
     }
 
@@ -136,6 +103,7 @@ class ChatMain extends React.Component {
         userId = global.currentUser.id
 
         requestRef = firebaseSvc.refRequests().where("sitter", "==", userId).onSnapshot(querySnapshot => {
+            console.log("Listening fetch Last Message now")
             returnDoc = false;
             querySnapshot.docChanges().forEach(change => {
                 if (change.type === 'added' && !change.doc.data().accepted) {
@@ -166,13 +134,7 @@ class ChatMain extends React.Component {
         })
     }
 
-    restartListener = () => {
-        this.fetchLastMessage();
-        this.fetchRequest();
-    }
-
     componentDidMount = async() => {
-        console.log("Chat main mounted")
         users = firebaseSvc.refUser();
 
         const response = await users.onSnapshot((Snapshot) => {
@@ -184,8 +146,8 @@ class ChatMain extends React.Component {
                         id:doc.id,// used as unique id in the list
                         _idTo:id,
                         name: name,
-                        //avatar: null,
-                        avatar:image || null,
+                        avatar: null,
+                        //avatar:image || null,
                         msg: {
                             createdAt: 0,
                             text:""
@@ -198,40 +160,9 @@ class ChatMain extends React.Component {
             });
         })
 
-        //fetch message between u and your friend
-        // this.fetchLastMessage();
-        // this.fetchRequest();
-        this.restartListener()
-
-        // const response = await itemsRef.onSnapshot((Snapshot) => {
-        //     Snapshot.forEach(async(doc) => {
-        //         const {name, id, image} = doc.data()
-        //         //ignore self
-        //         if(id != global.currentUser.id){
-        //             var temp = {
-        //                 id:doc.id,// used as unique id in the list
-        //                 _idTo:id,
-        //                 name: name,
-        //                 avatar: null,
-        //                 //avatar:image || null,
-        //                 msg: {
-        //                     createdAt: 0,
-        //                     text:"Default"
-        //                 },
-        //                 request:false
-        //             }
-        //             //fetch message between u and your friend
-        //             const data = await this.fetchLastMessage(id,global.currentUser.id)
-        //             temp.msg.createdAt = data.createdAt;
-        //             temp.msg.text = data.text;
-
-        //             const returnDoc = await this.fetchRequest(id,global.currentUser.id);
-        //             temp.request = returnDoc
-        //             var joined = this.state.data.concat(temp);
-        //             this.setState({data: joined})
-        //         }
-        //     });
-        // })
+        // /fetch message between u and your friend
+        this.fetchLastMessage();
+        this.fetchRequest();
 
         this.setState({
             name: global.currentUser.name,
@@ -240,7 +171,6 @@ class ChatMain extends React.Component {
     }
 
     componentWillUnmount() {
-        console.log("Chat main unmounting")
         firebaseSvc.refOff();
     }
 
@@ -250,7 +180,7 @@ class ChatMain extends React.Component {
                 <FlatList
                     style={styles.container}
                     data={this.state.data}
-                    renderItem = {({ item }) => <Item data = { item } navigation = {this.props.navigation} restartListener={this.restartListener}/>}
+                    renderItem = {({ item }) => <Item data = { item } navigation = {this.props.navigation} />}
                     keyExtractor={item => item.id}
                 />
             </View>

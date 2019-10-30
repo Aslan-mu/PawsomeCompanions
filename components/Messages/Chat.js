@@ -22,11 +22,7 @@ class Chat extends React.Component{
         this.state.request = this.props.navigation.state.params.request
     }
     static navigationOptions = ({ navigation }) => ({
-        title: (navigation.state.params || {}).chatWith || 'Chat!',
-        headerLeft: <Button title="Messages" onPress={() => {
-            console.log(navigation.state.params)
-            navigation.getParam("restartListener")();navigation.goBack()} }> </Button>
-        
+        title: (navigation.state.params || {}).chatWith || 'Chat!'
     });
 
     state = {
