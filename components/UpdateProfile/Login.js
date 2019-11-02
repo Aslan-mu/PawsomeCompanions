@@ -3,6 +3,7 @@ import {
   StyleSheet, Text,
   TextInput, View,
   AsyncStorage,
+  TouchableOpacity,
   Button,
 } from 'react-native';
 import firebaseSvc from '../../FirebaseSvc';
@@ -70,8 +71,7 @@ class Login extends React.Component {
     };
     
     loginFailed = () => {
-        console.log('login failed ***');
-        alert('Login failure. Please try again.');
+        alert('Login failed. Please try again.');
     };
   
     onChangeTextEmail = email => this.setState({ email });
@@ -79,61 +79,128 @@ class Login extends React.Component {
   
     render() {
         return (
-            <View>
-            <Text style={styles.title}>Email:</Text>
-            <TextInput
-                style={styles.nameInput}
-                placeHolder="test3@gmail.com"
-                onChangeText={this.onChangeTextEmail}
-                value={this.state.email}
-            />
-            <Text style={styles.title}>Password:</Text>
-            <TextInput
-                style={styles.nameInput}
-                onChangeText={this.onChangeTextPassword}
-                value={this.state.password}
-            />
-            <Button
-                title="Login"
-                style={styles.buttonText}
-                onPress={this.onPressLogin}
-            />
-    
-            <Button
-                title="Create new account"
-                style={styles.buttonText}
-                onPress={() => this.props.navigation.navigate("CreateAccount")}
-            />
-
-            <Button
-                title="Community feed test"
-                style={styles.buttonText}
-                onPress={() => this.props.navigation.navigate("Feed")}
-            />
+            <View style = {styles.viewStyle}>
+                <View style={styles.columnBox}>
+                    <Text style = {styles.title}>
+                        Hi there!
+                    </Text>
+                    <Text style = {styles.subTitle}>
+                        Welcome Back!
+                    </Text>
+                </View>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}>Email:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeHolder="test3@gmail.com"
+                        onChangeText={this.onChangeTextEmail}
+                        value={this.state.email}
+                    />
+                </View>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}>Password:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={this.onChangeTextPassword}
+                        value={this.state.password}
+                    />
+                </View>
+                <View style={styles.columnBox}>
+                    <TouchableOpacity style={styles.button} 
+                        onPress={this.onPressLogin}
+                        >
+                        <Text style = { styles.text}>
+                            Login
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} 
+                        onPress={() => this.props.navigation.navigate("Feed")}
+                        >
+                        <Text style = { styles.text}>
+                            Community feed test
+                        </Text>
+                    </TouchableOpacity>
+                    <View style = {styles.rowContainer}>
+                    <Text >
+                        New to Pawsome Community? 
+                    </Text>
+                    <TouchableOpacity  
+                        onPress={() => this.props.navigation.navigate("CreateAccount")}
+                        >
+                        <Text style = {{color:'blue',marginLeft:2}}>
+                            Sign up Here
+                        </Text>
+                    </TouchableOpacity>
+                    </View>
+                </View>
+                
             </View>
         );
     }
 }
-  
-const offset = 16;
+
 const styles = StyleSheet.create({
+    viewStyle:{
+        paddingTop:100,
+        height:800,
+        backgroundColor:"rgb(250,250,251)"
+    },
+    rowContainer:{
+        flexDirection:"row"
+    },
+    servicesLabel: {
+        // width: 60,
+        height: 16,
+        // fontFamily: "SFProText",
+        fontSize: 14,
+        fontWeight: "600",
+        fontStyle: "normal",
+        lineHeight: 16,
+        letterSpacing: 0,
+        color: "#1a051d",
+        marginBottom: 20
+    },
+    inputField: {
+        backgroundColor: "#ffffff",
+        borderRadius: 8, 
+        padding: 12,
+
+    },
+    button: {
+        margin: 10,
+        height: 48,
+        borderRadius: 6,
+        backgroundColor: "#f99558",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    columnBox:{
+        flexDirection: "column", 
+        margin: 20
+    },
+    text:{
+        textAlign: 'center',
+        fontSize: 17,
+        fontWeight: "400",
+        lineHeight: 20,
+        letterSpacing: 0,
+        color: "white",
+    },
     title: {
-        marginTop: offset,
-        marginLeft: offset,
-        fontSize: offset,
+        fontSize: 32,
+        fontWeight: "600",
+        fontStyle: "normal",
+        lineHeight: 34,
+        letterSpacing: 0,
+        color: "#1a051d",
     },
-    nameInput: {
-        height: offset * 3,
-        margin: offset,
-        paddingHorizontal: offset,
-        borderColor: '#111111',
-        borderWidth: 1,
-        fontSize: offset,
-    },
-    buttonText: {
-        height: offset * 3,
-        marginLeft: offset,
-        fontSize: 42,
+    subTitle: {
+        fontSize: 18,
+        fontWeight: "500",
+        fontStyle: "normal",
+        lineHeight: 22,
+        letterSpacing: 0,
+        color: "#1a051d",
     },
 });
   

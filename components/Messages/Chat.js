@@ -79,21 +79,23 @@ class Chat extends React.Component{
             request = this.state.request.data();
             return (
                 <View style = {styles.viewStyle}>
-                    <Text>You got a new request from {this.state.user.chatWith}!</Text>
-                    <Text>From {(new Date(request.startDate.seconds*1000).toLocaleString())} to {(new Date(request.endDate.seconds*1000).toLocaleString())}!</Text>
-                    <View style = {styles.rowContainer}>
-                        <TouchableOpacity
-                            style={styles.buttonText}
-                            onPress={ this.acceptButton }
-                        >
-                            <Text> Accept </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.buttonText}
-                            onPress={ this.declineButton }
-                        >
-                            <Text> Decline </Text>
-                        </TouchableOpacity>
+                    <View style={styles.columnContainer}>
+                        <Text style = {styles.oneLineText}>You got a new request from {this.state.user.chatWith}!</Text>
+                        <Text style = {styles.oneLineText}>From {(new Date(request.startDate.seconds*1000).toLocaleString())} to {(new Date(request.endDate.seconds*1000).toLocaleString())}!</Text>
+                        <View style = {styles.rowContainer}>
+                            <TouchableOpacity
+                                style={styles.buttonText}
+                                onPress={ this.acceptButton }
+                            >
+                                <Text> Accept </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.buttonText}
+                                onPress={ this.declineButton }
+                            >
+                                <Text> Decline </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>)
         }
@@ -146,7 +148,8 @@ class Chat extends React.Component{
 const offset = 16;
 const styles = StyleSheet.create({
     viewStyle: {
-        backgroundColor: '#D5E9FA',
+        height:offset*5,
+        backgroundColor:"#ffecb3",
         alignItems: 'center',
         padding:3,
     },
@@ -164,16 +167,26 @@ const styles = StyleSheet.create({
         fontSize: offset,
     },
     buttonText: {
-        height: offset * 3,
-        color: 'red',
+        borderRadius:5,
+        borderWidth: 1,
+        borderColor: "#F1C540",
+        backgroundColor: "#F1C540",
         marginLeft: offset,
-        fontSize: 42,
+        padding:2,
+        
+    },
+    oneLineText: {
+        flex:1,
+        alignItems: 'center',
     },
     rowContainer:{
-        //flex: 1,
-        //justifyContent: 'space-between',
+        flex: 1,
         flexDirection: 'row',
-        padding:5,
+    },
+    columnContainer:{
+        flexDirection: "column",
+        alignItems: 'center',
+        padding:1,
     },
     image: {
         width:100, 

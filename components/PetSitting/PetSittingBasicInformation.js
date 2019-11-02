@@ -123,7 +123,7 @@ export default class PetSittingBasicInformation extends React.Component {
         return (
             <View>
         
-            <ScrollView style={{backgroundColor:"rgb(250,250,251)"}}>
+            <ScrollView style={{flex:1,backgroundColor:"rgb(250,250,251)"}}>
                 <View style={{ flex: 1, top: 0, flexDirection: "column" }}>
 
                     {/* Date section */}

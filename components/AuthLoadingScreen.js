@@ -39,7 +39,6 @@ class AuthLoadingScreen extends React.Component {
             });
         }
         this.props.navigation.navigate(userToken ? 'App' : 'Login');
-        //this.props.navigation.navigate('Login');
     };
   
     // Render any loading content that you like here

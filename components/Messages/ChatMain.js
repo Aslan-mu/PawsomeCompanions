@@ -67,7 +67,6 @@ class ChatMain extends React.Component {
         userId = global.currentUser.id
         firebaseSvc.refLastMessages().onSnapshot(querySnapshot => {
             querySnapshot.docChanges().forEach(change => {
-                console.log("change get!",change.doc.data())
                 var msg = {
                     createdAt: "",
                     text: ""
@@ -101,9 +100,7 @@ class ChatMain extends React.Component {
         }
 
         userId = global.currentUser.id
-
         requestRef = firebaseSvc.refRequests().where("sitter", "==", userId).onSnapshot(querySnapshot => {
-            console.log("Listening fetch Last Message now")
             returnDoc = false;
             querySnapshot.docChanges().forEach(change => {
                 if (change.type === 'added' && !change.doc.data().accepted) {
