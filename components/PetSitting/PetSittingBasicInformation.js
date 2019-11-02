@@ -124,15 +124,15 @@ export default class PetSittingBasicInformation extends React.Component {
             <View>
         
             <ScrollView style={{backgroundColor:"rgb(250,250,251)"}}>
-                <View style={{ flex: 1, top: 0, flexDirection: "column" }}>
+                <View style={{flex: 1, top: 0, flexDirection: "column", paddingHorizontal: 20, marginVertical: 20 }}>
 
                     {/* Date section */}
-                    <View style={{ margin: 20 }}>
+                    <View style={{}}>
                         <Text style={styles.dates}>
                             DATES
                         </Text>
 
-                        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                             <View>
                                 <TouchableOpacity onPress={this.datePickerForStartDate} style={styles.startDateFrame}>
                                     <Text style={styles.buttonText}>
@@ -162,14 +162,14 @@ export default class PetSittingBasicInformation extends React.Component {
                     </View>
 
                     {/* Pet Section */}
-                    <View style={{ margin: 20, flex: 4, flexDirection: "column", }}>
+                    <View style={{ flex: 4, flexDirection: "column",  marginVertical: 20}}>
                         <Text style={styles.petsLabel}>
                             PETS
                         </Text>
 
                         <View style={{ width: 100, justifyContent: "center", alignItems: "center" }}>
                             <View style={styles.personProfilePhoto}>
-
+                                
                             </View>
                             <Text style={styles.petName}>
                                 Griffey
@@ -178,7 +178,7 @@ export default class PetSittingBasicInformation extends React.Component {
                     </View>
 
                     {/* Service section */}
-                    <View style={{ flex: 5, flexDirection: "column", margin: 20 }}>
+                    <View style={{ flex: 5, flexDirection: "column", marginBottom: 20}}>
                         <Text style={styles.servicesLabel}>
                             SERVICES
                         </Text>
@@ -203,7 +203,7 @@ export default class PetSittingBasicInformation extends React.Component {
                     </View>
                     
                     {/* Additional notes section */}
-                    <View style={{flex: 6, flexDirection: "column", margin: 20}}>
+                    <View style={{flex: 6, flexDirection: "column", marginBottom: 20}}>
                         <Text style={styles.servicesLabel}>
                             ADDITIONAL NOTES
                         </Text>
@@ -217,7 +217,7 @@ export default class PetSittingBasicInformation extends React.Component {
                     </View>
 
 
-                    <View style={{ flex: 6, justifyContent: "center", margin: 20 }}>
+                    <View style={{ flex: 6, justifyContent: "center",marginBottom: 20 }}>
                         <TouchableOpacity style={styles.searchFrame} onPress={() => this.props.navigation.navigate("SearchSitterList",{
                             startDate: this.state.startDate,
                             endDate: this.state.endDate,
@@ -280,7 +280,8 @@ const styles = StyleSheet.create({
         letterSpacing: 0,
         color: "#d0c9d6",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        color: "#3f3356"
         // marginRight: 4
     },
     dates: {

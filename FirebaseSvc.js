@@ -235,6 +235,10 @@ class FirebaseSvc {
         return firebase.database.ServerValue.TIMESTAMP;
     }
     
+    get firestoreTimestamp(){
+        return firebase.firestore.Timestamp.now();   
+    }
+
     // send the message to the Backend
     send = (messages) => {
         for (let i = 0; i < messages.length; i++) {
@@ -242,7 +246,7 @@ class FirebaseSvc {
             const message = {
                 text,
                 user,
-                createdAt: this.timestamp,
+                createdAt: this.firestoreTimestamp,
             };
             this.refMessages().push(message);
         }
@@ -254,7 +258,7 @@ class FirebaseSvc {
         const {text, numberOfLike, numberOfComment, image} = newPost
         const newPostToFirestore = {
             text,
-            numberOfComment, numberOfLike, image, timestamp: this.timestamp, owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`)
+            numberOfComment, numberOfLike, image, timestamp: this.firestoreTimestamp, owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`)
         }
 
         console.log(newPostToFirestore)
@@ -274,7 +278,7 @@ class FirebaseSvc {
         newSession.collection("Instructions").add(
             {
                 instruction: "add a new instruction",
-                timestamp: this.timestamp,
+                timestamp: this.firestoreTimestamp,
                 date: new Date(Date.now()),
                 repeat: "Everyday",
             }

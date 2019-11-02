@@ -98,7 +98,7 @@ export default class AddNewInstruction extends React.Component {
     render = () =>{
         return (
             <View style={{height: "100%"}}>
-
+                
             <ScrollView style={styles.additionContainer}>
                 <TextInput value={this.state.instruction} onChangeText={(text) => this.setState({instruction:text})} placeholder="Add task or instruction" style={styles.instructionSubjectText}>
                     

@@ -184,8 +184,8 @@ class ChatMain extends React.Component {
                         id:doc.id,// used as unique id in the list
                         _idTo:id,
                         name: name,
-                        //avatar: null,
-                        avatar:image || null,
+                        avatar: null,
+                        // avatar:image || null,
                         msg: {
                             createdAt: 0,
                             text:""
