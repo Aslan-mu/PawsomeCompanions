@@ -44,6 +44,9 @@ import RequestSentConfirmation from "./components/PetSitting/RequestSentConfirma
 import UserProfile from './components/Profile/UserProfile';
 import PetSittingInstruction from "./components/PetSittingInstructions/PetSittingInstructions"
 import AddNewInstruction from "./components/PetSittingInstructions/AddNewInstruction"
+import UserProfilePage from "./components/PetSitting/UserProfilePage"
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons"
 
 const communityStack = createStackNavigator({
 	Feed: {screen: CommunityFeed},
@@ -54,8 +57,10 @@ const communityStack = createStackNavigator({
 const petsittingStack = createStackNavigator({
 //   PetSitting: PetSitting,
   PetSittingBasicInformation: PetSittingBasicInformation,
+  // PetSittingBasicInformation :  UserProfilePage,
   SearchSitterList: SearchSitterList,
-  RequestSentConfirmation: {screen: RequestSentConfirmation}
+  RequestSentConfirmation: {screen: RequestSentConfirmation},
+  UserProfilePage :  {screen: UserProfilePage},
 })
 
 const userprofileStack = createStackNavigator({
@@ -84,8 +89,24 @@ const petSittingTab = createMaterialTopTabNavigator({
 })
 
 const tabNavigator = createBottomTabNavigator({
-	Feed: communityStack,
-	PetSitting: petsittingStack,
+  Feed: {
+    screen: communityStack,
+    path:"/",
+    navigationOptions:{
+      tabBarLabel:"",
+      tabBarIcon:({tintColor}) => {
+        <Icon name="home" size={28} color={tintColor}> </Icon>
+      }
+    }
+  },
+  PetSitting: {
+    screen: petsittingStack,
+    navigationOptions: {
+      tabBarIcon: ({tintColor}) =>{
+        <Icon name="search" size={28} color={"#000000"} ></Icon>
+      }
+    }
+  },
 	Messages: messageStack,
 	PetsittingInstruction: petSittingInstructionStack,
 	Profile: userprofileStack,
@@ -108,14 +129,15 @@ communityStack.navigationOptions = ({ navigation }) => {
 
     let tabBarVisible = true;
     let routeName = navigation.state.routes[navigation.state.index].routeName
+    let tabBarIcon =  <Icon name="search" size={28} color={"#000000"} ></Icon>;
     if ( routeName == 'NewCommunityPost' ) {
         tabBarVisible = false
     }
     return {
         tabBarVisible,
+        tabBarIcon  
     }
 }
-
 
 export default createAppContainer(createSwitchNavigator({
     AuthLoading: AuthLoadingScreen,

@@ -9,6 +9,7 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firebaseSvc from "../../FirebaseSvc";
+import UserProfilePage from "./UserProfilePage"
 
 const DATA = [
   {
@@ -24,6 +25,9 @@ const DATA = [
     title: 'Third Item',
   },
 ];
+
+// One way is to think how to convince people that availability is not an issue
+
 
 const BEN = {
   name: "Ben",
@@ -73,17 +77,16 @@ const PETSITTING_DATA = [
 
 function NameTag({ name, deleteAName, id }) {
   return (
-    <View style={{ borderRadius: 4, marginVertical: 4, marginLeft: 4, paddingHorizontal: 4, height: 30, backgroundColor: "transparent", flexDirection: "row", alignItems: "center",  }}>
-      <Text style={{ fontSize: 16 }}> {name} </Text>
-      <TouchableHighlight underlayColor="white" onPress={() => deleteAName(name, id)}>
-        <Icon name={"close"} size={16}></Icon>
+    <View style={{ borderRadius: 4, marginVertical: 4, marginHorizontal:4, paddingHorizontal: 4, height: 30, backgroundColor: "#a59af5", flexDirection: "row", alignItems: "center", }}>
+      <Text style={{ fontSize: 16, color:"#ffffff"}}> {name} </Text>
+      <TouchableHighlight underlayColor= "#a59af5" onPress={() => deleteAName(name, id)}>
+        <Icon name={"close"} size={16} color="#ffffff"></Icon>
       </TouchableHighlight>
-      
     </View>
   )
 }
 
-function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked, numOfRecommendations, item }) {
+function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked, numOfRecommendations, item, navigation }) {
 
   const [checked, setChecked] = React.useState(false)
   const onChecked = () => {
@@ -104,7 +107,9 @@ function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked, numOf
   return (
     <TouchableHighlight onPress={onChecked} underlayColor="white">
       <View style={styles.item}>
-        <View style={styles.personProfilePhoto}></View>
+        <TouchableHighlight onPress={ ()=> navigation.navigate("UserProfilePage", {userData: item})} >
+          <View style={styles.personProfilePhoto}></View>
+        </TouchableHighlight>
         <View>
             <Text style={styles.sitterName}>{item.name}</Text>
             <Text style={styles.peopleRecommended}>{item.numOfRecommendations} People Recommended</Text>
@@ -134,14 +139,16 @@ function SearchBar(props) {
     setSitterList(props.sitterList)
   })
 
-  return (
-    <View style={{ height: 44, padding: 8, flexDirection: "row", flexWrap: "wrap", alignItems:"center", marginBottom: 4, marginTop: 8 }}>
-      <Text style={styles.toLabel}> To: </Text>
-      {sitterList.map((s, i) => {
-        console.log(s)
-        return (<NameTag name={s.name} id={s.id} key={s.id + i} deleteAName={props.deleteAName}></NameTag>)
-        }
-      )}
+  return ( 
+    <View style={{ height: 50, flexDirection: "row", paddingHorizontal:12, alignItems:"center", marginBottom: 4, marginTop: 8 }}>
+      <Text style={styles.toLabel}> Selected: </Text>
+      <ScrollView directionalLockEnabled horizontal>
+        {sitterList.map((s, i) => {
+          console.log(s)
+          return (<NameTag name={s.name} id={s.id} key={s.id + i} deleteAName={props.deleteAName}></NameTag>)
+          }
+        )}
+      </ScrollView>
     </View>
   )
 }
@@ -196,9 +203,7 @@ export default class SearchSitterList extends React.Component {
       handleSave: () => {  
         this.state.sitterList.forEach( sitter=>
             firebaseSvc.addNewRequest({...this.state.requestData, sitter: sitter.id})
-          
         )
-        
       }
     })
 
@@ -211,12 +216,11 @@ export default class SearchSitterList extends React.Component {
           incomingUserData.push({
             name: userData.name,
             image: userData.image,
-            numOfRecommendations:count,
+            numOfRecommendations:userData.numOfRecommendations,
             community: "",
             livingDistance: "",
             userID: id
           })
-          count +=1 
         })
 
         incomingUserData.sort( d => -1 * d.numOfRecommendations )
@@ -235,7 +239,7 @@ export default class SearchSitterList extends React.Component {
           sections={this.state.petSittingData}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => <Item item={item} title={item.name} numOfRecommendations={item.numOfRecommendations} addANewSitterCandidate={this.addANewSitterCandidate}
-            deleteAName={this.deleteAName} sitterChecked={this.state.sitterList.map(s => s.id).includes(item.userID)} />}
+            deleteAName={this.deleteAName} sitterChecked={this.state.sitterList.map(s => s.id).includes(item.userID)} navigation={this.props.navigation} />}
           renderSectionHeader={({ section: { title } }) => <Header title={title}></Header>}
         >
         </SectionList>
@@ -350,10 +354,12 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     letterSpacing: 0,
     color: "#1a051d",
-    margin: 20
+    margin: 20,
+    backgroundColor:"#ffffff"
   }, 
   toLabel:{
-    width: 101,
+    position:"relative",
+    // width: 101,
     height: 20,
     // fontFamily: "SFProText",
     fontSize: 15,

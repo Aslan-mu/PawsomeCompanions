@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {
     StyleSheet, Text,
     TextInput, View,
@@ -26,20 +26,24 @@ function HeaderRight(props) {
 
 function CustomHeader(props) {
     return (
-        <View style={{height: 50, justifyContent:"center", left: 0,padding: 12, backgroundColor: "rgb(250,250,251)"}}>
+        <View style={{height: 70, justifyContent:"center", left: 0,padding: 12, backgroundColor: "rgb(250,250,251)"}}>
             <Text style={styles.title}>
                 Midtown
             </Text>
         </View>
     )
-
 }
 
 function IndividualPostCard(props) {
 
+    useEffect( ()=>{
+
+    })
     const data = props.postData
     const imageString = data.imageSourceText
     console.log(data.timestamp)
+
+    const doesCurrentUserLikePost = props.postData.usersWhoLike.includes(global.currentUser.id)
     return (
         <View style={styles.card}>
             <View style={{flexDirection: "row", alignItems: "center", height:60}}>
@@ -63,11 +67,18 @@ function IndividualPostCard(props) {
                 </View>
 
                 <View style={{ flex: 1, flexDirection: "row", alignItems: "center", height: 30 }}>
-                    <Icon name="favorite-border" size={24} />
-                    <Text style={{ marginLeft: 4, marginRight: 8 }}>Like {data.numberOfLike}</Text>
+                    <TouchableOpacity 
+                        onPress={ doesCurrentUserLikePost? ()=>props.unLikeAction(global.currentUser.id ,props.postData) : ()=>props.likeAction(global.currentUser.id ,props.postData)}
+                        style={{backgroundColor:"transparent", flexDirection:"row", alignItems:"center"}}>
+                        { 
+                            doesCurrentUserLikePost? <Icon name="favorite" size={24} /> : <Icon name="favorite-border" size={24} /> }
+                        <Text style={{ marginLeft: 4, marginRight: 8 }}>Like {data.numberOfLike}</Text>
+                    </TouchableOpacity>
 
-                    <Icon name="question-answer" size={24} style={{ marginLeft: 16 }} />
-                    <Text style={{ marginHorizontal:4 }}>Comment {data.numberOfComment}</Text>
+                    <TouchableOpacity style={{backgroundColor:"transparent",  flexDirection:"row",  alignItems:"center"}}>
+                        <Icon name="question-answer" size={24} style={{ marginLeft: 16, }} />
+                        <Text style={{ marginHorizontal:4 }}>Comment {data.numberOfComment}</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -121,7 +132,8 @@ class CommunityFeed extends React.Component {
         liked: false,
         commented: false,
         timestamp: 1571163581361,
-        postCategory: "Pet pics"
+        postCategory: "Pet pics", 
+        usersWhoLike: ["d04fkhh2nVNPp62PYHEOM5cGv872"]
     },
     {
         text: "This pet is so cute",
@@ -132,17 +144,19 @@ class CommunityFeed extends React.Component {
         liked: false,
         commented: false,
         timestamp: 1571163581361,
-        postCategory: "Event"
+        postCategory: "Event",
+        usersWhoLike: ["d04fkhh2nVNPp62PYHEOM5cGv872"]
     }, {
         text: "This pet is so cute",
         imageSource: testImageLink,
         user: "Sam",
         numberOfLike: 10,
         numberOfComment: 20,
-        liked: false,
+        liked: false, 
         commented: false,
         timestamp: 1571163581361,
-        postCategory: "Pet sitting"
+        postCategory: "Pet sitting",
+        usersWhoLike: ["d04fkhh2nVNPp62PYHEOM5cGv872"]
     }
 ]
 
@@ -165,12 +179,11 @@ class CommunityFeed extends React.Component {
             marginLeft: 0
         },
         header: null
-            
     })
 
     componentDidMount =() =>{
         this.props.navigation.setParams({addNewPost:this.addPost})
-        firebaseSvc.refPostOn(this.parseSnapshot)
+        firebaseSvc.refPostOn(this.parseSnapshot, this.modifiedSnapshot)
     } 
 
     navigateToNewPage = () => {
@@ -182,7 +195,30 @@ class CommunityFeed extends React.Component {
         this.setState({feedData: [newPost].concat(this.state.feedData)})
     }
 
-    parseSnapshot = (postData) => {
+    modifiedSnapshot = (postData, postID) =>{
+        // Find the existing data with the same postID
+        postData.owner.get().then(res => {
+            const postOwner = res.data()
+            const newData = {
+                text : postData.text,
+                timestamp: postData.timestamp,
+                numberOfComment: postData.numberOfComment,
+                numberOfLike: postData.usersWhoLike.length,
+                imageSource: postData.image,
+                userID: postData.ownerID,
+                user: postOwner.name,
+                usersWhoLike: postData.usersWhoLike,
+                postCategory: postData.postCategory,
+                id: postID, 
+            }
+            const index = this.state.feedData.findIndex(p => p.id === postID)
+            const filteredArray = this.state.feedData.filter(p=> p.id !== postID)
+            filteredArray.splice(index, 0, newData)
+            this.setState({feedData:filteredArray})
+        })
+    }
+
+    parseSnapshot = (postData, postID) => {
         // console.log(postData.ownerID)
         // text: "This pet is so cute",
         // imageSource: testImage,
@@ -198,10 +234,14 @@ class CommunityFeed extends React.Component {
                 text : postData.text,
                 timestamp: postData.timestamp,
                 numberOfComment: postData.numberOfComment,
-                numberOfLike: postData.numberOfLike,
+                numberOfLike: postData.usersWhoLike.length,
                 imageSource: postData.image,
                 userID: postData.ownerID,
                 user: postOwner.name,
+                usersWhoLike: postData.usersWhoLike,
+                postCategory: postData.postCategory,
+                id: postID,
+                avator: null,
             }
             this.setState({ feedData: [newData].concat(this.state.feedData)})            
             console.log(res.data().name)})
@@ -254,14 +294,25 @@ class CommunityFeed extends React.Component {
             
             <ScrollView style={{ flex: 1, flexDirection: "column", backgroundColor:"#fafafa" }}>
                 {this.state.filterPosts === "All" ? 
-                    this.state.feedData.map( (d,i) => <IndividualPostCard postData={d} key={i}></IndividualPostCard>)
+                    this.state.feedData.map( (d,i) => <IndividualPostCard unLikeAction={this.userUnlikeOnePost} likeAction={this.userLikeOnePost} postData={d} key={i}></IndividualPostCard>)
                     : 
-                    this.state.feedData.filter(d => d.postCategory === this.state.filterPosts).map((d,i) => <IndividualPostCard postData={d} key={i}></IndividualPostCard>)
+                    this.state.feedData.filter(d => d.postCategory === this.state.filterPosts).map((d,i) => <IndividualPostCard postData={d} unLikeAction={this.userUnlikeOnePost} likeAction={this.userLikeOnePost} key={i}></IndividualPostCard>)
                 }
             </ScrollView>
             </SafeAreaView>
-            
         )
+    }
+
+    userLikeOnePost = (userID, postData) =>{
+        // call the backend to update the postID.
+        // then add itself to the number like to the data itself
+        const newUsersWhoLike = postData.usersWhoLike.concat([userID])
+        firebaseSvc.updateUsersWhoLike(newUsersWhoLike, postData.id)
+    }
+
+    userUnlikeOnePost = (userID, postData) => {
+        const newUsersWhoLike = postData.usersWhoLike.filter(u => u !== userID)
+        firebaseSvc.updateUsersWhoLike(newUsersWhoLike, postData.id)
     }
 }
 

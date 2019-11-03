@@ -11,32 +11,33 @@ import {
 class AuthLoadingScreen extends React.Component {
     constructor() {
         super();
-        this._bootstrapAsync();
     }
   
+    async componentDidMount() {
+        await this._bootstrapAsync();
+    }
     // Fetch the token from storage then navigate to our appropriate place
     _bootstrapAsync = async () => {
         const userToken = await AsyncStorage.getItem('userToken');
       
         if (userToken){
             console.log(userToken);
-            firebase.firestore().collection('Users').doc(userToken).get()
-            .then(doc => {
-                if (!doc.exists) {
-                    console.log('No such document!');
-                } else {
-                    const {id, email, name, image} = doc.data();
-                    global.currentUser = {
-                        imageSource:{uri: image},
-                        id: id,
-                        email: email,
-                        name: name,
-                    }
-                }
-            })
-            .catch(err => {
+            const doc = await firebase.firestore().collection('Users').doc(userToken).get().catch(err => {
                 console.log('Error getting document', err);
             });
+            
+            if (!doc.exists) {
+                console.log('No such document!');
+            } else {
+                const {id, email, name, image} = doc.data();
+                global.currentUser = {
+                    imageSource:{uri: image},
+                    id: id,
+                    email: email,
+                    name: name,
+                }
+            }
+            
         }
         this.props.navigation.navigate(userToken ? 'App' : 'Login');
         //this.props.navigation.navigate('Login');

@@ -212,13 +212,16 @@ class FirebaseSvc {
         return firebase.firestore().collection('CommunityPosts');
     }
 
-    refPostOn = (callback) =>{
+    refPostOn = (callback, modifiedCallback) =>{
         this.refPosts().onSnapshot(
             querySnapShot =>{
                 querySnapShot.docChanges().forEach(change => {
                     if (change.type === 'added') {
-                        callback(change.doc.data())
+                        callback(change.doc.data(), change.doc.id)
                       }
+                    else if (change.type === "modified") {
+                        modifiedCallback(change.doc.data(), change.doc.id)
+                    }
                 }) 
             }
         )
@@ -255,10 +258,12 @@ class FirebaseSvc {
     setNewPost = ( newPost ) =>{
         console.log("push to firestore")
         
-        const {text, numberOfLike, numberOfComment, image} = newPost
+        const {text, numberOfLike, numberOfComment, image, usersWhoLike} = newPost
         const newPostToFirestore = {
             text,
+            usersWhoLike,
             numberOfComment, numberOfLike, image, timestamp: this.firestoreTimestamp, owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`)
+
         }
 
         console.log(newPostToFirestore)
@@ -285,8 +290,19 @@ class FirebaseSvc {
         )
     }
     
+    refPostDoc = (postID) => firebase.firestore().collection("CommunityPosts").doc(postID)
     
-
+    updateUsersWhoLike = (newUsersWhoLike , postID) => {
+        this.refPostDoc(postID).update(
+            {
+                usersWhoLike: newUsersWhoLike
+            }
+        ).catch(error => {
+            console.log("update fail")
+            console.log(error)
+            
+        })
+    }
 }
 const firebaseSvc = new FirebaseSvc();
 export default firebaseSvc;
