@@ -216,13 +216,16 @@ class FirebaseSvc {
         return firebase.firestore().collection('CommunityPosts');
     }
 
-    refPostOn = (callback) =>{
+    refPostOn = (callback, modifiedCallback) =>{
         this.refPosts().onSnapshot(
             querySnapShot =>{
                 querySnapShot.docChanges().forEach(change => {
                     if (change.type === 'added') {
-                        callback(change.doc.data())
+                        callback(change.doc.data(), change.doc.id)
                       }
+                    else if (change.type === "modified") {
+                        modifiedCallback(change.doc.data(), change.doc.id)
+                    }
                 }) 
             }
         )
@@ -239,10 +242,17 @@ class FirebaseSvc {
         return firebase.database.ServerValue.TIMESTAMP;
     }
     
+
+    get firestoreTimestamp(){
+        return firebase.firestore.Timestamp.now();   
+    }
+
+
     get timestampFireStore() {
         return firebase.firestore.FieldValue.serverTimestamp()
     }
     
+
     // send the message to the Backend
     send = (messages) => {
         for (let i = 0; i < messages.length; i++) {
@@ -267,10 +277,12 @@ class FirebaseSvc {
     setNewPost = ( newPost ) =>{
         console.log("push to firestore")
         
-        const {text, numberOfLike, numberOfComment, image} = newPost
+        const {text, numberOfLike, numberOfComment, image, usersWhoLike} = newPost
         const newPostToFirestore = {
             text,
-            numberOfComment, numberOfLike, image, timestamp: this.timestamp, owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`)
+            usersWhoLike,
+            numberOfComment, numberOfLike, image, timestamp: this.firestoreTimestamp, owner: firebase.firestore().doc(`/Users/${global.currentUser.id}`)
+
         }
 
         console.log(newPostToFirestore)
@@ -290,15 +302,26 @@ class FirebaseSvc {
         newSession.collection("Instructions").add(
             {
                 instruction: "add a new instruction",
-                timestamp: this.timestamp,
+                timestamp: this.firestoreTimestamp,
                 date: new Date(Date.now()),
                 repeat: "Everyday",
             }
         )
     }
     
+    refPostDoc = (postID) => firebase.firestore().collection("CommunityPosts").doc(postID)
     
-
+    updateUsersWhoLike = (newUsersWhoLike , postID) => {
+        this.refPostDoc(postID).update(
+            {
+                usersWhoLike: newUsersWhoLike
+            }
+        ).catch(error => {
+            console.log("update fail")
+            console.log(error)
+            
+        })
+    }
 }
 const firebaseSvc = new FirebaseSvc();
 export default firebaseSvc;

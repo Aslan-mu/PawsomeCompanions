@@ -40,7 +40,7 @@ class Chat extends React.Component{
             chatWith: this.props.navigation.state.params.chatWith,
             _idTo: this.props.navigation.state.params._idTo,
             _id: global.currentUser.id, // need for gifted-chat
-            avatar: global.currentUser.imageSource.uri || null,
+            // avatar: global.currentUser.imageSource.uri || null,
         };
     }
 

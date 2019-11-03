@@ -8,15 +8,6 @@ import {
 
 export default class PetSitting extends React.Component {
 
-    // dummyUserData = 
-    //     [
-    //         {
-    //             userName:"",
-    //             userId:"",
-    //         }
-
-    //     ]
-    
     constructor(props) {
         super(props)
     }

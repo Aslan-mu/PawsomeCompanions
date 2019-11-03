@@ -52,7 +52,8 @@ class NewCommunityPost extends React.Component {
                         numberOfComment: 0,
                         owner:global.currentUser.id,
                         image: url,
-                        petCategory
+                        petCategory,
+                        usersWhoLike: []
                     }
                     firebaseSvc.setNewPost(newPost)
                 }).catch(function(error) {
