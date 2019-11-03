@@ -25,6 +25,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 
+import Main from './components/UpdateProfile/Main';
 import Login from './components/UpdateProfile/Login';
 import CreateAccount from './components/UpdateProfile/CreateAccount';
 import Referral from './components/UpdateProfile/Referral';
@@ -73,6 +74,7 @@ const messageStack = createStackNavigator({
 })
 
 const loginAppNavigator = createStackNavigator({
+    Main: { screen: Main},
 	Login: { screen: Login },
 	CreateAccount: { screen: CreateAccount },
     Referral: { screen: Referral },

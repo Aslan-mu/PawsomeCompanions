@@ -2,7 +2,7 @@ import React from 'react';
 import {
   StyleSheet, Text,
   TextInput, View,
-  Button,
+  TouchableOpacity,
   Image,
 } from 'react-native';
 
@@ -24,7 +24,7 @@ class Referral extends React.Component {
 
     constructor(props){
         super(props)
-        this.state={ imageSource: require('./circle.svg')}
+        this.state={ imageSource: null}
     }
 
     static navigationOptions = {
@@ -117,29 +117,39 @@ class Referral extends React.Component {
   
     render() {
         return (
-            <View>
+            <View style = {styles.viewStyle}>
                 <View style={{alignItems: 'center'}}>
                     <Image source={this.state.imageSource} style={styles.image}></Image>
                 </View>
-                <Button
-                    title="Upload Image"
-                    style={styles.buttonText}
-                    onPress={ this.pickImage }
-                />
-                <Text style={styles.title}>Community Referral: </Text>
-            
-                <TextInput
-                    style={styles.nameInput}
-                    onChangeText={this.onChangeTextReferral}
-                    value={this.state.referral}
-                />
-
-                <Text style={styles.title}> {this.state.communityName} </Text>
-                <Button
-                    title="Confirm"
-                    style={styles.buttonText}
-                    onPress={ this.confirmButton }
-                />
+                <View style={styles.columnBox}>
+                    <TouchableOpacity style={styles.button} 
+                        onPress={this.pickImage}
+                        >
+                        <Text style = { styles.text}>
+                            Upload Image
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}>Community Referral:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={this.onChangeTextReferral}
+                        value={this.state.referral}
+                    />
+                </View>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}> {this.state.communityName} </Text>
+                </View>
+                <View style={styles.columnBox}>
+                    <TouchableOpacity style={styles.button} 
+                        onPress={this.confirmButton}
+                        >
+                        <Text style = { styles.text}>
+                            Confirm
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -147,30 +157,56 @@ class Referral extends React.Component {
   
 const offset = 16;
 const styles = StyleSheet.create({
-    title: {
-        marginTop: offset,
-        marginLeft: offset,
-        fontSize: offset,
-    },
-    nameInput: {
-        height: offset * 3,
-        margin: offset,
-        paddingHorizontal: offset,
-        borderColor: '#111111',
-        borderWidth: 1,
-        fontSize: offset,
-    },
-    buttonText: {
-        height: offset * 3,
-        marginLeft: offset,
-        fontSize: 42,
-    },
     image: {
         width:100, 
         height:100,
+        backgroundColor:"grey",
+        borderRadius:50,
         marginLeft: offset,
         marginTop: offset,
-    }
+    },
+    viewStyle:{
+        height:800,
+        backgroundColor:"rgb(250,250,251)"
+    },
+    servicesLabel: {
+        // width: 60,
+        height: 16,
+        // fontFamily: "SFProText",
+        fontSize: 12,
+        fontWeight: "600",
+        fontStyle: "normal",
+        lineHeight: 16,
+        letterSpacing: 0,
+        color: "#1a051d",
+        marginBottom: 20
+    },
+    inputField: {
+        backgroundColor: "#ffffff",
+        borderRadius: 8, 
+        padding: 12,
+
+    },
+    button: {
+        // width: "90%",
+        height: 48,
+        borderRadius: 6,
+        backgroundColor: "#f99558",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    columnBox:{
+        flexDirection: "column", 
+        margin: 20
+    },
+    text:{
+        textAlign: 'center',
+        fontSize: 17,
+        fontWeight: "400",
+        lineHeight: 20,
+        letterSpacing: 0,
+        color: "white",
+    },
 });
   
 export default Referral;

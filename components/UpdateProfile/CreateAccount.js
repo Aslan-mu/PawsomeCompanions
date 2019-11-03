@@ -2,7 +2,7 @@ import React from 'react';
 import {
     StyleSheet, Text,
     TextInput, View,
-    Button,
+    TouchableOpacity,
 } from 'react-native';
 import firebaseSvc from '../../FirebaseSvc';
   
@@ -52,55 +52,88 @@ class CreateAccount extends React.Component {
   
     render() {
         return (
-            <View>
-            <Text style={styles.title}>Email:</Text>
-            <TextInput
-                style={styles.nameInput}
-                onChangeText={this.onChangeTextEmail}
-                value={this.state.email}
-            />
-            <Text style={styles.title}>Password:</Text>
-            <TextInput
-                style={styles.nameInput}
-                onChangeText={this.onChangeTextPassword}
-                value={this.state.password}
-            />
-            <Text style={styles.title}>Name:</Text>
-            <TextInput
-                style={styles.nameInput}
-                onChangeText={this.onChangeTextName}
-                value={this.state.name}
-            />
-            <Button
-                title="Create Account"
-                style={styles.buttonText}
-                onPress={this.onPressCreate}
-            />
+            <View style = {styles.viewStyle}>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}>Email:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={this.onChangeTextEmail}
+                        value={this.state.email}
+                    />
+                </View>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}>Password:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={this.onChangeTextPassword}
+                        value={this.state.password}
+                    />
+                </View>
+                <View style={styles.columnBox}>
+                    <Text style={styles.servicesLabel}>Name:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={this.onChangeTextName}
+                        value={this.state.name}
+                    />
+                </View>
+                <View style={styles.columnBox}>
+                    <TouchableOpacity style={styles.button} 
+                        onPress={this.onPressCreate}
+                        >
+                        <Text style = { styles.text}>
+                            Create Account
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
 }
-  
-const offset = 16;
+
 const styles = StyleSheet.create({
-title: {
-    marginTop: offset,
-    marginLeft: offset,
-    fontSize: offset,
-},
-nameInput: {
-    height: offset * 3,
-    margin: offset,
-    paddingHorizontal: offset,
-    borderColor: '#111111',
-    borderWidth: 1,
-    fontSize: offset,
-},
-buttonText: {
-    height: offset * 3,
-    marginLeft: offset,
-    fontSize: 42,
-},
+    viewStyle:{
+        flex:1,
+        backgroundColor:"rgb(250,250,251)"
+    },
+    servicesLabel: {
+        // width: 60,
+        height: 16,
+        // fontFamily: "SFProText",
+        fontSize: 14,
+        fontWeight: "600",
+        fontStyle: "normal",
+        lineHeight: 16,
+        letterSpacing: 0,
+        color: "#1a051d",
+        marginBottom: 20
+    },
+    inputField: {
+        backgroundColor: "#ffffff",
+        borderRadius: 8, 
+        padding: 12,
+
+    },
+    button: {
+        // width: "90%",
+        height: 48,
+        borderRadius: 6,
+        backgroundColor: "#f99558",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    columnBox:{
+        flexDirection: "column", 
+        margin: 20
+    },
+    text:{
+        textAlign: 'center',
+        fontSize: 17,
+        fontWeight: "400",
+        lineHeight: 20,
+        letterSpacing: 0,
+        color: "white",
+    },
 });
 
 export default CreateAccount;

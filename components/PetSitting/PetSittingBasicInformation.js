@@ -174,6 +174,7 @@ export default class PetSittingBasicInformation extends React.Component {
             <CustomHeader></CustomHeader>
             <ScrollView contentContainerStyle={{width:"100%"}} style={{backgroundColor:"rgb(250,250,251)", width:"100%"}}>
                 <View style={{flex: 1, top: 0, flexDirection: "column", paddingHorizontal: 12, marginVertical: 0, width:"100%" }}>
+
                     {/* Date section */}
                     <View style={{}}>
                         <Text style={styles.dates}>
