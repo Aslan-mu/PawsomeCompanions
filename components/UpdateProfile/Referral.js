@@ -9,7 +9,6 @@ import {
 import firebaseSvc from '../../FirebaseSvc';
 import firebase from 'firebase';
 import ImagePicker from 'react-native-image-picker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const options = {
     title: 'Image',
@@ -24,7 +23,7 @@ class Referral extends React.Component {
 
     constructor(props){
         super(props)
-        this.state={ imageSource: null}
+        this.state={ imageSource: require("./camera.png")}
     }
 
     static navigationOptions = {
@@ -101,35 +100,38 @@ class Referral extends React.Component {
     }
 
     confirmButton = async () => {
-        await this.uploadImage(this.state.imageSource);
+        if (this.state.referral == null){
+            alert("Please fill referral code!")
+            return
+        }
         await firebaseSvc.updateReferral(this.state.referral);
-        await firebase.storage().ref('UserImage').child(global.currentUser.id).getDownloadURL().then(function(url) {
-            firebaseSvc.updateImage(url);
-        }).catch(function(error) {
-            // A full list of error codes is available at
-            // https://firebase.google.com/docs/storage/web/handle-errors
-            switch (error.code) {
-                
-            }
-        });
-        this.props.navigation.navigate("PetSittingPreference")
+        if (this.state.imageSource != null) {
+            await this.uploadImage(this.state.imageSource);
+            await firebase.storage().ref('UserImage').child(global.currentUser.id).getDownloadURL().then(function(url) {
+                firebaseSvc.updateImage(url);
+            }).catch(function(error) {
+                // A full list of error codes is available at
+                // https://firebase.google.com/docs/storage/web/handle-errors
+                switch (error.code) {
+                    
+                }
+            });
+        }
+        alert("Information submitted!")
+        this.props.navigation.navigate("PetSittingPreferenceStart")
     }
   
     render() {
         return (
             <View style = {styles.viewStyle}>
-                <View style={{alignItems: 'center'}}>
-                    <Image source={this.state.imageSource} style={styles.image}></Image>
-                </View>
-                <View style={styles.columnBox}>
-                    <TouchableOpacity style={styles.button} 
-                        onPress={this.pickImage}
-                        >
-                        <Text style = { styles.text}>
-                            Upload Image
-                        </Text>
+                <View style={styles.columnBox1}>
+                    <Text style={styles.servicesLabel}>Your Image:</Text>
+                    <TouchableOpacity style={{alignItems: 'center',marginBottom:20, width:80, height:80,}} 
+                        onPress={this.pickImage}>
+                        <Image source={this.state.imageSource} style={styles.image}></Image>
                     </TouchableOpacity>
                 </View>
+                
                 <View style={styles.columnBox}>
                     <Text style={styles.servicesLabel}>Community Referral:</Text>
                     <TextInput
@@ -138,10 +140,14 @@ class Referral extends React.Component {
                         value={this.state.referral}
                     />
                 </View>
+                <Text style={styles.servicesLabel}> {this.state.communityName} </Text>
                 <View style={styles.columnBox}>
-                    <Text style={styles.servicesLabel}> {this.state.communityName} </Text>
-                </View>
-                <View style={styles.columnBox}>
+                    <Text style={styles.textContent}>
+                        The referral code from another member of the community to join the app with full functionality.
+                    </Text>
+                    <Text style={styles.textContent}>
+                        We are a neighborhood-based service, and we want to make our community safe and happy. Part of this is to make sure people you see here actually live in the neighborhood
+                    </Text>
                     <TouchableOpacity style={styles.button} 
                         onPress={this.confirmButton}
                         >
@@ -158,11 +164,11 @@ class Referral extends React.Component {
 const offset = 16;
 const styles = StyleSheet.create({
     image: {
-        width:100, 
-        height:100,
-        backgroundColor:"grey",
+        width:80, 
+        height:80,
+        borderColor:"grey",
+        borderWidth:2,
         borderRadius:50,
-        marginLeft: offset,
         marginTop: offset,
     },
     viewStyle:{
@@ -170,21 +176,29 @@ const styles = StyleSheet.create({
         backgroundColor:"rgb(250,250,251)"
     },
     servicesLabel: {
-        // width: 60,
-        height: 16,
-        // fontFamily: "SFProText",
-        fontSize: 12,
+        textAlign: 'center',
         fontWeight: "600",
-        fontStyle: "normal",
-        lineHeight: 16,
+        fontSize: 20,
+        lineHeight: 24,
+        lineHeight: 20,
         letterSpacing: 0,
         color: "#1a051d",
-        marginBottom: 20
+        margin:20,
+    },
+    textContent:{
+        textAlign: 'center',
+        fontSize: 15,
+        lineHeight: 20,
+        letterSpacing: 0,
+        color: "#1a051d",
+        margin:10
     },
     inputField: {
         backgroundColor: "#ffffff",
         borderRadius: 8, 
         padding: 12,
+        borderBottomColor:"#e5e3e2",
+        borderBottomWidth:1
 
     },
     button: {
@@ -195,9 +209,18 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+    columnBox1:{
+        flexDirection: "column", 
+        marginBottom: 20,
+        marginLeft: 20,
+        marginRight: 20,
+        alignItems:"center",
+    },
     columnBox:{
         flexDirection: "column", 
-        margin: 20
+        marginBottom: 20,
+        marginLeft: 20,
+        marginRight: 20
     },
     text:{
         textAlign: 'center',

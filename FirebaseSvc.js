@@ -197,6 +197,14 @@ class FirebaseSvc {
         return firebase.firestore().collection("Requests");
     }
 
+    refPetSittingPreference(){
+        return firebase.firestore().collection("PetSittingPreference");
+    }
+
+    refPets(){
+        return firebase.firestore().collection("Pets");
+    }
+
     addNewRequest(requestData){
         // Need more tweaks
         const newRequestDataPushed = {

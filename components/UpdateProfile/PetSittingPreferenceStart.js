@@ -1,53 +1,38 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View,
-  Image,
-  TouchableOpacity,
+  StyleSheet, Text,
+  View,TouchableOpacity,
 } from 'react-native';
 
-class Main extends React.Component {
+class PetSittingPreferenceStart extends React.Component {
     static navigationOptions = {
-        header: null,
+        title: 'PetSittingPreference',
     };
   
     render() {
         return (
             <View style = {styles.viewStyle}>
-                <View style={styles.imageBox}>
-                    <Image source={require('./App-Logo.png')} style={styles.image}></Image>
-                </View>
                 <View style={styles.columnBox}>
-                    <View style={{margin:10}}>
-                        <Text style={styles.title}>
-                            Pawsome
-                        </Text>
-                        <Text style={styles.title}>
-                            Companions
-                        </Text>
-                    </View>
-
-                    <View style={{margin:10}}>
-                        <Text style={styles.text}>
-                            Meet pet lovers
-                        </Text>
-                        <Text style={styles.text}>
-                            Find pet sitters
-                        </Text>
-                    </View>
+                    <Text style={styles.servicesLabel}>Pet sitting preference</Text>
+                    <Text style={styles.textContent}>
+                        Our community thrives by helping each other. You can choose to register as a pet sitter. If you are happy to pet sit, pet owners can send you pet sitting request to help taking care of their furry friends.
+                    </Text>
                 </View>
                 <View style={styles.columnBox}>
                     <TouchableOpacity style={styles.loginButton} 
-                        onPress={() => this.props.navigation.navigate("Login")}
+                        onPress={()=>{this.props.navigation.navigate("PetSittingPreference")}}
                         >
                         <Text style={styles.loginText}>
-                            Log in
+                            Yes, I'd love to pet sit
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.signUpButton} 
-                        onPress={() => this.props.navigation.navigate("CreateAccount")}
-                        >
+                        onPress={()=>{
+                            alert("Account created! Login now!")
+                            this.props.navigation.navigate("Login")
+                        }}>
                         <Text style={styles.signUpText}>
-                            Sign up
+                            Not now
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -55,38 +40,31 @@ class Main extends React.Component {
         );
     }
 }
-
+  
 const styles = StyleSheet.create({
-    image: {
-        width:128, 
-        height:128,
-    },
-    imageBox: {
-        alignItems: "center",
-        flex:1,
-        margin:40
-    },
     viewStyle:{
         paddingTop:150,
         paddingBottom:200,
         flex:1,
         backgroundColor:"rgb(250,250,251)"
     },
-    title: {
+    servicesLabel: {
         textAlign: 'center',
-        fontSize: 22,
         fontWeight: "600",
-        fontStyle: "normal",
-        lineHeight: 28,
+        fontSize: 20,
+        lineHeight: 24,
+        lineHeight: 20,
         letterSpacing: 0,
         color: "#1a051d",
+        margin:20,
     },
-    text: {
+    textContent:{
         textAlign: 'center',
         fontSize: 15,
         lineHeight: 20,
         letterSpacing: 0,
         color: "#1a051d",
+        margin:10
     },
     loginText:{
         textAlign: 'center',
@@ -103,11 +81,6 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         letterSpacing: 0,
         color: "#1a051d",
-    },
-    inputField: {
-        backgroundColor: "#ffffff",
-        borderRadius: 8, 
-        padding: 12,
     },
     loginButton: {
         margin: 10,
@@ -134,5 +107,5 @@ const styles = StyleSheet.create({
     }
 });
   
-export default Main;
+export default PetSittingPreferenceStart;
   
