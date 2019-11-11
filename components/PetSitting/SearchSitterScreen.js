@@ -217,8 +217,8 @@ export default class SearchSitterList extends React.Component {
             name: userData.name,
             image: userData.image,
             numOfRecommendations:userData.numOfRecommendations,
-            community: "",
-            livingDistance: "",
+            community: userData.community,
+            // livingDistance: "",
             userID: id
           })
         })

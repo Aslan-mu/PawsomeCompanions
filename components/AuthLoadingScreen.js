@@ -29,12 +29,13 @@ class AuthLoadingScreen extends React.Component {
             if (!doc.exists) {
                 console.log('No such document!');
             } else {
-                const {id, email, name, image} = doc.data();
+                const {id, email, name, image, community="Midtown"} = doc.data();
                 global.currentUser = {
                     imageSource:{uri: image},
                     id: id,
                     email: email,
                     name: name,
+                    community: community
                 }
             }
             

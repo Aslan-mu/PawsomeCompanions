@@ -61,6 +61,7 @@ class Chat extends React.Component{
             sitter: data.sitter,
             pet: 'Griffey',
             service: data.service,
+            additionNotes: data.additionNotes
         })
         
         this.setState({

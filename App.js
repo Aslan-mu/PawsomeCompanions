@@ -44,6 +44,8 @@ import RequestSentConfirmation from "./components/PetSitting/RequestSentConfirma
 import UserProfile from './components/Profile/UserProfile';
 import PetSittingInstruction from "./components/PetSittingInstructions/PetSittingInstructions"
 import AddNewInstruction from "./components/PetSittingInstructions/AddNewInstruction"
+import SavedInstruction from "./components/PetSittingInstructions/SavedInstructions"
+
 import UserProfilePage from "./components/PetSitting/UserProfilePage"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons"
@@ -61,6 +63,7 @@ const petsittingStack = createStackNavigator({
   SearchSitterList: SearchSitterList,
   RequestSentConfirmation: {screen: RequestSentConfirmation},
   UserProfilePage :  {screen: UserProfilePage},
+
 })
 
 const userprofileStack = createStackNavigator({
@@ -80,8 +83,10 @@ const loginAppNavigator = createStackNavigator({
 });
 
 const petSittingInstructionStack = createStackNavigator({
-	PetSittingInstruction: PetSittingInstruction,
-	AddNewInstruction : AddNewInstruction
+  PetSittingInstruction: PetSittingInstruction,
+  // PetSittingInstruction: SavedInstruction,
+  AddNewInstruction : AddNewInstruction,
+  SavedInstruction: SavedInstruction
 })
 
 const petSittingTab = createMaterialTopTabNavigator({

@@ -47,7 +47,7 @@ class FirebaseSvc {
         )
     }
 
-    refMessages() {
+    refMessages () {
         return firebase.database().ref('Messages');
     }
 
@@ -59,17 +59,21 @@ class FirebaseSvc {
         return firebase.firestore().collection("PetSittingSessions")
     }
 
-    async querySpecificUser (userID) {
+    querySpecificUser = async (userID) => {
         const snapShot = await this.refUser().doc(userID).get().catch(error => console.warn(error))
         return snapShot
     }
 
-    async queryInstructionsForOneSession(docID) {
+    queryInstructionsForOneSession = async (docID) => {
         const snapshot = await this.refPetSittingSessions().doc(docID).collection("Instructions").get()
         return snapshot 
     }
 
-    async queryPetSittingSessionForOneOwner(ownerID){
+    refFirestoreSubCollectionInstruction = (petInstructionSessionID) => {
+        return firebase.firestore().collection(`PetSittingSessions`).doc(petInstructionSessionID).collection("Instructions")
+    }
+
+    queryPetSittingSessionForOneOwner = async (ownerID) => {
         const snapshot = await this.refPetSittingSessions().where( "owner" ,"==", ownerID ).get().catch(error => console.log)
         console.log("receive data")
         
@@ -104,6 +108,7 @@ class FirebaseSvc {
 
 
     async addNewInstructionToTheSession(sessionId , newInstruction){
+
         this.refPetSittingSessions().doc(sessionId).collection("Instructions").add(
             {...newInstruction, timestamp:this.timestamp}).
             then().catch(console.warn)
@@ -189,7 +194,7 @@ class FirebaseSvc {
         return message;
     };
 
-    refRequests(){
+    refRequests= () => {
         return firebase.firestore().collection("Requests");
     }
 
@@ -208,7 +213,7 @@ class FirebaseSvc {
         this.refRequests().add(newRequestDataPushed).then(()=>{console.log("New request created")})
     }
 
-    refPosts() {
+    refPosts = () => {
         return firebase.firestore().collection('CommunityPosts');
     }
 
@@ -274,7 +279,7 @@ class FirebaseSvc {
 
     updateImage = (url) => this.refUser().doc(global.currentUser.id).update({image: url})
 
-    refOff() {
+    refOff = () => {
         this.refMessages().off();
     }
     
@@ -289,7 +294,7 @@ class FirebaseSvc {
             }
         )
     }
-    
+
     refPostDoc = (postID) => firebase.firestore().collection("CommunityPosts").doc(postID)
     
     updateUsersWhoLike = (newUsersWhoLike , postID) => {
@@ -303,6 +308,11 @@ class FirebaseSvc {
             
         })
     }
+
+    refSavedInstructions = () => firebase.firestore().collection("SavedInstructions")
+
+    refSavedInstructionsForSpecificUser = (userID)=> this.refSavedInstructions().where("owner", "==", userID)
+
 }
 const firebaseSvc = new FirebaseSvc();
 export default firebaseSvc;

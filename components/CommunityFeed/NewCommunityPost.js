@@ -3,7 +3,7 @@ import {
     StyleSheet, Text,
     TextInput, View,
     Button, ImageEditor, ScrollView, 
-    Image, TouchableOpacity
+    Image, TouchableOpacity, SafeAreaView
 } from "react-native"
 
 import ImagePicker from 'react-native-image-picker';
@@ -114,7 +114,9 @@ class NewCommunityPost extends React.Component {
 
     render(){
         return (
-        <View style={{padding:12}}>
+        
+        <SafeAreaView>
+            <View style={{padding:12}}>
             <TextInput style={styles.posterSubject}>
               Welcome to the community!
             </TextInput>
@@ -173,7 +175,8 @@ class NewCommunityPost extends React.Component {
                 <Icon name="navigation" size={24} style={{marginRight:30}}></Icon>
                 <Button title="Add location" color={"black"} onPress={ this.pickImage }/>
             </View> 
-        </View>
+            </View>
+        </SafeAreaView>
         )
     }
 
