@@ -51,6 +51,10 @@ class FirebaseSvc {
         return firebase.database().ref('Messages');
     }
 
+    refLastMessages() {
+        return firebase.firestore().collection('LastMessages');
+    }
+
     refRequests() {
         return firebase.firestore().collection('Requests');
     }
@@ -170,7 +174,7 @@ class FirebaseSvc {
                     _id:userf,
                     _idTo:_idTo,
                     name:name,
-                    avatar:user.avatar
+                    // avatar:user.avatar
                 }
             };
         }
@@ -187,7 +191,7 @@ class FirebaseSvc {
                     _id:_idTo,
                     _idTo:userf,
                     name:chatWith,
-                    //avatar:user.avatar
+                    // avatar:user.avatar
                 }
             };
         }
@@ -243,20 +247,35 @@ class FirebaseSvc {
         return firebase.database.ServerValue.TIMESTAMP;
     }
     
+
     get firestoreTimestamp(){
         return firebase.firestore.Timestamp.now();   
     }
+
+
+    get timestampFireStore() {
+        return firebase.firestore.FieldValue.serverTimestamp()
+    }
+    
 
     // send the message to the Backend
     send = (messages) => {
         for (let i = 0; i < messages.length; i++) {
             const { text, user } = messages[i];
-            const message = {
+            const messageForChat = {
                 text,
                 user,
-                createdAt: this.firestoreTimestamp,
+                createdAt: this.timestamp,
             };
-            this.refMessages().push(message);
+            this.refMessages().push(messageForChat);
+
+            const messageForChatMain = {
+                text,
+                user,
+                createdAt: this.timestampFireStore,
+            };
+            this.refLastMessages().doc(user._id+"_"+user._idTo).set(messageForChatMain);
+            this.refLastMessages().doc(user._idTo+"_"+user._id).set(messageForChatMain);
         }
     };
 
