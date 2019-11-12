@@ -74,14 +74,16 @@ const InfoRoute = () => (
 );
 
 class UserProfilePage extends React.Component {
-  state = {
-    index: 0,
-    routes: [{key: 'first', title: 'INFO'}, {key: 'second', title: 'POST'}],
-  };
+  // state = {
+  //   index: 0,
+  //   routes: [{key: 'first', title: 'INFO'}, {key: 'second', title: 'POST'}],
+  // };
 
   constructor(props){
     super(props);
     this.state = {
+      index: 0,
+      routes: [{key: 'first', title: 'INFO'}, {key: 'second', title: 'POST'}],
       userData : {
         name: "",
         // oh, how to calculate? Do we really need it? 
@@ -104,6 +106,7 @@ class UserProfilePage extends React.Component {
     // grab user preference
     // grab user post
     // grab pets 
+    const data = ""
     
   }
 
