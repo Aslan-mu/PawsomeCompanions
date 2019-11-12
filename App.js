@@ -29,7 +29,9 @@ import Main from './components/UpdateProfile/Main';
 import Login from './components/UpdateProfile/Login';
 import CreateAccount from './components/UpdateProfile/CreateAccount';
 import Referral from './components/UpdateProfile/Referral';
+import PetSittingPreferenceStart from './components/UpdateProfile/PetSittingPreferenceStart';
 import PetSittingPreference from './components/UpdateProfile/PetSittingPreference';
+import PetProfile from './components/UpdateProfile/PetProfile';
 
 import ChatMain from './components/Messages/ChatMain';
 import Chat from './components/Messages/Chat';
@@ -81,7 +83,9 @@ const loginAppNavigator = createStackNavigator({
 	  Login: { screen: Login },
 	  CreateAccount: { screen: CreateAccount },
     Referral: { screen: Referral },
-    PetSittingPreference: { screen: PetSittingPreference },
+    PetSittingPreferenceStart: { screen: PetSittingPreferenceStart },
+    PetSittingPreference: {screen: PetSittingPreference},
+    PetProfile: {screen: PetProfile}
 });
 
 const petSittingInstructionStack = createStackNavigator({
