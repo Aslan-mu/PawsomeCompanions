@@ -17,9 +17,9 @@ import {TabView, SceneMap} from 'react-native-tab-view';
 
 const PostRoute = () => (
   <View style={[styles.scene, {backgroundColor: '#ffffff'}]} >
-      <Text>
-        This is the post route
-      </Text>
+    <Text>
+      This is the post route
+    </Text>
   </View>
 );
 
@@ -67,7 +67,6 @@ const InfoRoute = () => (
           </Text>
 
           <Text style={styles.bodyText}>
-
           </Text>
       </View>
 
@@ -75,32 +74,44 @@ const InfoRoute = () => (
 );
 
 class UserProfilePage extends React.Component {
-  state = {
-    index: 0,
-    routes: [{key: 'first', title: 'INFO'}, {key: 'second', title: 'POST'}],
-  };
-
-  userData = {
-    name: "Sara",
-    // oh, how to calculate? Do we really need it? 
-    living: "distance", 
-    numberOfRecommendations: 5,
-    about: "",
-    pets:"",
-    petSitting:"",
-    recommendations: "",
-    posts: []    
-  }
+  // state = {
+  //   index: 0,
+  //   routes: [{key: 'first', title: 'INFO'}, {key: 'second', title: 'POST'}],
+  // };
 
   constructor(props){
     super(props);
+    this.state = {
+      index: 0,
+      routes: [{key: 'first', title: 'INFO'}, {key: 'second', title: 'POST'}],
+      userData : {
+        name: "",
+        // oh, how to calculate? Do we really need it? 
+        living: "distance", 
+        numberOfRecommendations: 5,
+        about: "",
+        pets:"",
+        petSitting:"",
+        recommendations: "",
+        posts: []    
+      }
+    }
   }
 
   static navigationOptions = ({navigation}) => {
     title: 'User Profile';
   };
 
+  componentDidMount(){
+    // grab user preference
+    // grab user post
+    // grab pets 
+    const data = ""
+    
+  }
+
   render = () => {
+    
     return (
       <SafeAreaView style={{padding: 12}}>
         {/* User top */}
@@ -109,13 +120,13 @@ class UserProfilePage extends React.Component {
 
           <View style={{padding: 12, marginLeft:8}}>
             {/* Name */}
-            <Text style={[styles.name, {marginBottom:4, alignItems:"flex-start"} ]}>{this.userData.name}</Text>
+            <Text style={[styles.name, {marginBottom:4, alignItems:"flex-start"} ]}>{this.state.userData.name}</Text>
 
             {/* Living */}
             <Text style={[styles.bodyText, {marginBottom:4,alignItems:"flex-start"}]}> Midtown West, 0.6 mi away </Text>
 
             {/* Recommendation */}
-            <Text style={[styles.bodyText,{marginBottom:10} ]}> 5 people recommended </Text>
+            <Text style={[styles.bodyText,{marginBottom:10} ]}> {this.state.numberOfRecommendations} people recommended </Text>
           </View>
         </View>
 

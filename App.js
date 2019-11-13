@@ -47,6 +47,8 @@ import RequestSentConfirmation from "./components/PetSitting/RequestSentConfirma
 import UserProfile from './components/Profile/UserProfile';
 import PetSittingInstruction from "./components/PetSittingInstructions/PetSittingInstructions"
 import AddNewInstruction from "./components/PetSittingInstructions/AddNewInstruction"
+import SavedInstruction from "./components/PetSittingInstructions/SavedInstructions"
+
 import UserProfilePage from "./components/PetSitting/UserProfilePage"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons"
@@ -64,6 +66,7 @@ const petsittingStack = createStackNavigator({
   SearchSitterList: SearchSitterList,
   RequestSentConfirmation: {screen: RequestSentConfirmation},
   UserProfilePage :  {screen: UserProfilePage},
+
 })
 
 const userprofileStack = createStackNavigator({
@@ -77,8 +80,8 @@ const messageStack = createStackNavigator({
 
 const loginAppNavigator = createStackNavigator({
     Main: { screen: Main},
-	Login: { screen: Login },
-	CreateAccount: { screen: CreateAccount },
+	  Login: { screen: Login },
+	  CreateAccount: { screen: CreateAccount },
     Referral: { screen: Referral },
     PetSittingPreferenceStart: { screen: PetSittingPreferenceStart },
     PetSittingPreference: {screen: PetSittingPreference},
@@ -86,8 +89,10 @@ const loginAppNavigator = createStackNavigator({
 });
 
 const petSittingInstructionStack = createStackNavigator({
-	PetSittingInstruction: PetSittingInstruction,
-	AddNewInstruction : AddNewInstruction
+  PetSittingInstruction: PetSittingInstruction,
+  // PetSittingInstruction: SavedInstruction,
+  AddNewInstruction : AddNewInstruction,
+  SavedInstruction: SavedInstruction
 })
 
 const petSittingTab = createMaterialTopTabNavigator({
@@ -98,29 +103,68 @@ const tabNavigator = createBottomTabNavigator({
   Feed: {
     screen: communityStack,
     path:"/",
-    navigationOptions:{
-      tabBarLabel:"",
-      tabBarIcon:({tintColor}) => {
-        <Icon name="home" size={28} color={tintColor}> </Icon>
-      }
-    }
+    
+
+    navigationOptions :({navigation, screenProps}) => {
+      let anyNotification = navigation.getParam("notification")
+      console.log("Hello my world")
+      console.log(screenProps)
+  
+
+      if (anyNotification){
+        return {
+          tabBarIcon:({tintColor}) => (
+            <Icon name="home" size={24} color={tintColor} style={{alignSelf:"center"}}> </Icon>
+          )
+        }}
+      return {}
+    s},
   },
   PetSitting: {
     screen: petsittingStack,
     navigationOptions: {
-      tabBarIcon: ({tintColor}) =>{
-        <Icon name="search" size={28} color={"#000000"} ></Icon>
-      }
+      tabBarIcon: ({tintColor}) =>(
+        <Icon name="search" size={24} color={tintColor} ></Icon>
+      )
     }
   },
-	Messages: messageStack,
-	PetsittingInstruction: petSittingInstructionStack,
-	Profile: userprofileStack,
-	// PetSittingInstruction: petSittingTab
-}, {resetOnBlur: true})
+	Messages: {
+    screen: messageStack,
+    navigationOptions: {
+      tabBarIcon: ({tintColor}) =>(
+        <MaterialCommunityIcon name="message-text-outline" size={22} color={tintColor}/>
+      )
+    }
+  },
+	PetsittingInstruction: {
+    screen: petSittingInstructionStack,
+    navigationOptions: {
+      tabBarIcon: ({tintColor}) =>(
+        <Icon name="pets" size={24} color={tintColor}/>
+      )
+    }
+  },
+  Profile: {
+    screen: userprofileStack,
+    navigationOptions: {
+      tabBarIcon: ({tintColor})=> (
+        <MaterialCommunityIcon name="account-circle-outline" size={22} color={tintColor}/>
+      )
+    }
+  },
+}, {
+  initialRouteParams: {notification: "1234"},
+  resetOnBlur: true,
+  tabBarOptions:{
+    tabStyle:{
+      justifyContent:"center",
+      alignItems:"center",
+    }
+    }
+  })
 
 messageStack.navigationOptions = ({ navigation }) => {
-
+    
     let tabBarVisible = true;
     let routeName = navigation.state.routes[navigation.state.index].routeName
     if ( routeName == 'Chat' ) {
@@ -133,16 +177,26 @@ messageStack.navigationOptions = ({ navigation }) => {
 
 communityStack.navigationOptions = ({ navigation }) => {
 
+    // I figure out the problem
+    
     let tabBarVisible = true;
     let routeName = navigation.state.routes[navigation.state.index].routeName
-    let tabBarIcon =  <Icon name="search" size={28} color={"#000000"} ></Icon>;
-    if ( routeName == 'NewCommunityPost' ) {
-        tabBarVisible = false
-    }
-    return {
-        tabBarVisible,
-        tabBarIcon  
-    }
+    let tabBarIcon =  <Icon name="home" size={28} color={"#000000"} ></Icon>;
+    // let anyNotification = navigation.getParam("notification")
+    // console.log("Hello my world")
+    // console.log(anyNotification)
+    // if (anyNotification){
+    //     return {tabBarIcon: <Icon name="search" size={24} color={tintColor}></Icon>}
+    // }
+
+    // if ( routeName == 'NewCommunityPost' ) {
+    //     tabBarVisible = false
+    // }
+    // return {
+    //     tabBarVisible,
+    //     tabBarIcon: 
+    //       ({tintColor}) => <Icon name="home" size={24} color={tintColor}></Icon>
+    // }
 }
 
 export default createAppContainer(createSwitchNavigator({
@@ -152,5 +206,6 @@ export default createAppContainer(createSwitchNavigator({
   },
   {
     initialRouteName: 'AuthLoading',
+    initialRouteParams: {notification: "1235"}
   }
 ));

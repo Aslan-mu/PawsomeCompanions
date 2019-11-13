@@ -29,17 +29,18 @@ class AuthLoadingScreen extends React.Component {
             if (!doc.exists) {
                 console.log('No such document!');
             } else {
-                const {id, email, name, image} = doc.data();
+                const {id, email, name, image, community="Midtown"} = doc.data();
                 global.currentUser = {
                     imageSource:{uri: image},
                     id: id,
                     email: email,
                     name: name,
+                    community: community
                 }
             }
             
         }
-        this.props.navigation.navigate(userToken ? 'App' : 'Login');
+        this.props.navigation.navigate(userToken ? 'App' : 'Login', {notification: "123"});
     };
   
     // Render any loading content that you like here

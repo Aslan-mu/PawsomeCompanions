@@ -10,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firebaseSvc from "../../FirebaseSvc";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons"
 
 const colors = {
     white: "#fff",
@@ -18,23 +19,71 @@ const colors = {
     eggplantTwo: "rgb(26,5,29)"
 }
 
+class CheckBox extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {isCheck: props.value};
+    }
+  
+    checkClicked = async () => {
+      await this.setState(prevState => ({
+        isCheck: !prevState.isCheck,
+      })); // setState is async function.
+  
+      // Call function type prop with return values.
+      this.props.clicked && this.props.clicked(this.props.value, this.state.isCheck);
+    }
+  
+    
+    componentDidUpdate( prevProps , prevState){
+        if (prevProps.value !== this.props.value){
+            this.setState({isCheck: this.props.value})
+        }
+    }
+
+    render() {
+      return (
+        <TouchableOpacity onPress={this.checkClicked} style={this.props.style}>
+          <View style={{
+            height: 24,
+            width: 24,
+            borderWidth: 1,
+            borderColor: 'rgb(236,235,237)',
+            backgroundColor:"#ffffff",
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius:4,
+            shadowColor: "rgba(0, 0, 0, 0.07)",
+            shadowOffset: {
+                width: 0,
+                height: 7
+            },
+            shadowRadius: 24,
+            shadowOpacity: 1,
+          }}>
+            <View style={{
+              height: 12,
+              width: 12,
+              backgroundColor: this.state.isCheck ? 'rgb(151,151,151)' : '#FFF',
+            }} />
+          </View>
+        </TouchableOpacity>
+      )
+    }
+}
+
 
 function DateTimePickerComponent(props) {
     // Need to set the data. so it will pass in a set time function, which accepts two different 
     const [date, setDate] = React.useState(new Date(Date.now()))
     const mode = props.mode
-    // const [show, setShow] = React.useState(props.show)
     const submit = props.submit
-    // const effect = React.useEffect(()=>{
-    //     date = new Date("2018-09-30T11:00:00")
-    //     setShow(props.show)   
-    // })
 
     onDateChange = (event, newDate) => {
         newDate = newDate || date;
-
         setDate(newDate)
     }
+
 
     return (
         <View style={{ flex: 1, position:"absolute", bottom: 0, left: 0, width: "100%", backgroundColor: "#ffffff"}}>
@@ -46,6 +95,7 @@ function DateTimePickerComponent(props) {
                 is24Hour={true}
                 display="default"
                 // date = {date}
+                style={{backgroundColor:"#c9c9c9"}}
                 onChange={onDateChange}
             />
         </View>)
@@ -60,9 +110,12 @@ export default class AddNewInstruction extends React.Component {
             instruction: "",
             repeatFrequency: "Everyday",
             time: undefined,
-            reminder: "Choose a date",
-            addNewDetails: "", 
-            show : false
+            // reminder: "Off",
+            reminder: false,
+            notes: "", 
+            show : false, 
+            crucial: false,
+            saveToSavedInstruction: true
         }
     }
     
@@ -85,7 +138,9 @@ export default class AddNewInstruction extends React.Component {
                     instruction: state.instruction, 
                     repeat: state.repeatFrequency,
                     reminder: state.reminder,
-                    date: state.time
+                    date: state.time,
+                    crucial: state.crucial,
+                    saveToSavedInstruction: state.saveToSavedInstruction
                 })
             }
         })
@@ -95,66 +150,75 @@ export default class AddNewInstruction extends React.Component {
 
     }
 
+    setInstruction = (instruction) => {
+        this.setState({instruction: instruction})
+    }
+
     render = () =>{
         return (
             <View style={{height: "100%"}}>
                 
             <ScrollView style={styles.additionContainer}>
-                <TextInput value={this.state.instruction} onChangeText={(text) => this.setState({instruction:text})} placeholder="Add task or instruction" style={styles.instructionSubjectText}>
-                    
+                <TextInput value={this.state.instruction} 
+                        onChangeText={(text) => this.setState({instruction:text})} 
+                        placeholder="Add task or instruction" style={styles.instructionSubjectText}
+                        multiline
+                        textAlignVertical="center"
+                        
+                        >           
                 </TextInput>
                 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("SavedInstruction", {setInstruction: this.setInstruction})}>
                     <Text style={styles.createFromSaved}>
-                        Create from saved instructions
+                        Or create from saved instructions
                     </Text>
-
                 </TouchableOpacity>
-                {/* <Button title="Create from saved instructions" color={colors.cornflower}>
-                    
+                {/* <Button title="Create from saved instructions" color={colors.cornflower}>    
                 </Button> */}
 
-                <TouchableOpacity style={styles.individualButton}>
-                    <Icon name="repeat" size={24}>
-                                           
-                    </Icon>
 
-                    <Text>
+                <TouchableOpacity style={[styles.individualButton, {marginTop:32}]}>
+                    <Icon name="repeat" size={24}/>
+                                        
+                    <Text style={{marginLeft: 8}}>
                         Repeat: {this.state.repeatFrequency}
                     </Text>
-
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.individualButton} onPress = {() => {this.setState({show: true})}}>
-                    <Icon name="repeat" size={24}>
+                <TouchableOpacity style={styles.individualButton} onPress={()=>{}}>
+                    <MaterialCommunityIcon name="bell-outline" size={24}/>
+
+                    <Text style={{marginLeft: 8}}>
+                        {/* Reminder: {this.state.reminder} */}
+                        Reminder
+                    </Text>
+
+                    {/* <Button title="Off" onPress = {() => {}} >
                         
-                    </Icon>
+                    </Button> */}
+                    <CheckBox clicked={(value, isChecked) => this.setState({reminder: isChecked}) } value={this.state.reminder} style={{position:"absolute", right: 20}}>
+
+                    </CheckBox>
+                    
+                </TouchableOpacity>
+
+                { this.state.reminder ? 
+
+                <TouchableOpacity style={styles.individualButton} onPress = {() => {this.setState({show: true})}}>
+                    <Icon name="access-time" size={24}/>
 
                     {/* This should be a date picker */}
-                    <Text>
-
+                    <Text style={{marginLeft: 8}}>
                         Time: {this.state.time === undefined ? "Selected Date": this.state.time.toTimeString()}
                     </Text>         
 
                     {/* <Button title="Morning" onPress = {() => {}} >
                         
                     </Button> */}
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.individualButton} onPress={()=>{}}>
-                    <Icon name="repeat" size={24}>
-                        
-                    </Icon>
-
-                    <Text>
-                        Reminder: {this.state.reminder}
-                    </Text>
-
-                    {/* <Button title="Off" onPress = {() => {}} >
-                        
-                    </Button> */}
-                    
-                </TouchableOpacity>
+                </TouchableOpacity> :
+                
+                <View></View>
+                }
 
                 <View style={styles.instructionForNewInstruction}>
                     <Text style={{height: 40}}>
@@ -162,9 +226,31 @@ export default class AddNewInstruction extends React.Component {
                     </Text>
                 </View>
 
-                <TextInput placeholder="Add details" style={styles.inputBox} multiline> 
-                    
-                </TextInput>
+                <TouchableOpacity style={[styles.individualButton, {marginTop:32}]}>
+                    <Icon name="warning" size={24}/>
+
+                    <Text style={{marginLeft: 8}}>
+                        Crucial
+                    </Text>
+
+                    <CheckBox clicked={(value, isChecked)=>{this.setState({crucial: isChecked})}} value={this.state.crucial} style={{position:"absolute", right:20}} > 
+                    </CheckBox>    
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.individualButton} onPress = {() => {}}>
+                    <MaterialCommunityIcon name="content-save-outline" size={24}/>
+
+                    {/* This should be a date picker */}
+                    <Text style={{marginLeft: 8}}>
+                        Save to saved instructions
+                    </Text>         
+
+                    <CheckBox clicked={(value, isChecked)=>{ this.setState( {saveToSavedInstruction: isChecked} ) }} value={this.state.saveToSavedInstruction} style={{position:"absolute", right:20}} > 
+                    </CheckBox>    
+                </TouchableOpacity>
+
+                <TextInput placeholder="Add details" value={this.state.notes} onChange={(text) => this.setState({notes:text})}  style={styles.inputBox} multiline/> 
+
             </ScrollView>
             {this.state.show ? <DateTimePickerComponent mode={"time"} submit={ (date) => this.setState({time: date, show: false})}></DateTimePickerComponent> : <View/> }
             </View>
@@ -177,9 +263,12 @@ const styles = StyleSheet.create({
         padding: 12
     },
     instructionSubjectText : {
-        width: 323,
+        justifyContent:"center",
+        paddingTop:0,
+        paddingBottom: 0,
         height: 47,
-        padding: 4,
+        // padding: 4,
+        paddingVertical: 10,
         borderRadius: 4,
         backgroundColor: colors.white,
         shadowColor: "rgba(0, 0, 0, 0.07)",
@@ -191,27 +280,30 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         borderStyle: "solid",
         borderWidth: 1,
-        borderColor: "#ecebed"      
+        borderColor: "#ecebed",
+        alignItems:"center",
+        marginTop:22,
+        color: "#000"
     }, 
     createFromSaved : {
-        width: 223,
         height: 18,
         fontSize: 15,
         fontWeight: "500",
         fontStyle: "normal",
         letterSpacing: 0,
         color: colors.cornflower,
-        marginVertical: 12   
+        marginVertical: 8,
+        marginLeft: 8
     },
 
     individualButton : {
-        marginVertical: 5,
-        width: 323,
+        marginBottom: 4,
         height: 40,
         borderRadius: 4,
         backgroundColor: colors.paleGrey,
         flexDirection: "row", alignItems: "center",
-        padding: 8
+        padding: 8,
+        paddingHorizontal: 12
     },
     individualButtonText : {
         marginLeft: 8,
@@ -239,9 +331,10 @@ const styles = StyleSheet.create({
         marginBottom: 24
     }, 
     inputBox : {
-        marginTop:24,
         // width: 322,
-        height: 271,
+        // height: 271,
+        marginTop: 36,
+        height: 47,
         borderRadius: 8,
         backgroundColor: colors.white,
         shadowColor: "rgba(0, 0, 0, 0.07)",
@@ -254,9 +347,7 @@ const styles = StyleSheet.create({
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#ecebed",
-        padding: 8
+        padding: 8,
+        color: "#000"
     }
-
-
-
 })

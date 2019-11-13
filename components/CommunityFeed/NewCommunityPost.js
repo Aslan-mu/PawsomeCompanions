@@ -3,7 +3,7 @@ import {
     StyleSheet, Text,
     TextInput, View,
     Button, ImageEditor, ScrollView, 
-    Image, TouchableOpacity
+    Image, TouchableOpacity, SafeAreaView
 } from "react-native"
 
 import ImagePicker from 'react-native-image-picker';
@@ -19,7 +19,6 @@ const options = {
         path: 'images',
     },
 };
-  
 
 class NewCommunityPost extends React.Component {
 
@@ -29,52 +28,88 @@ class NewCommunityPost extends React.Component {
     }
 
     componentDidMount = () => {
-        console.log(this.props.navigation.state)
+        // console.log(this.props.navigation.state)
         const navigation= this.props.navigation 
         this.props.navigation.setParams({handleSave: async () => 
         {    
 
             const newText = this.state.text
             const imageSource = this.state.imageSource
-            const petCategory = this.state.petCategory
-            const uploadNewPostAndNavigate = () => {
-                firebase.storage().ref('PostImage').child(this.state.imageID).getDownloadURL().then(function(url) {
-                    // update service with post id
-                    console.log("callback + 1")
-                    console.log("New post")
-                    console.log(url)
-                    console.log(navigation)
-                    console.log("After this.props")
-                    const newPost = {   
-                        text: newText,
-                        imageSource,
-                        numberOfLike: 0,
-                        numberOfComment: 0,
-                        owner:global.currentUser.id,
-                        image: url,
-                        petCategory,
-                        usersWhoLike: []
-                    }
-                    firebaseSvc.setNewPost(newPost)
-                }).catch(function(error) {
-                // A full list of error codes is available at
-                    console.log(error)
-                    switch (error.code) {
+            const posterCategory = this.state.posterCategory
+            // const uploadNewPostAndNavigate = () => {
+            //     firebase.storage().ref('PostImage').child(this.state.imageID).getDownloadURL().then(function(url) {
+            //         // update service with post id
+            //         console.log("callback + 1")
+            //         console.log("New post")
+            //         console.log(url)
+            //         console.log(navigation)
+            //         console.log("After this.props")
+            //         const newPost = {   
+            //             text: newText,
+            //             imageSource,
+            //             numberOfLike: 0,
+            //             numberOfComment: 0,
+            //             owner:global.currentUser.id,
+            //             image: url,
+            //             petCategory,
+            //             usersWhoLike: []
+            //         }
+            //         firebaseSvc.setNewPost(newPost)
+            //     }).catch(function(error) {
+            //     // A full list of error codes is available at
+            //         console.log(error)
+            //         switch (error.code) {
                         
-                    }
-                });    
-            }
+            //         }
+            //     });    
+            // }
             // await this.uploadImage(this.state.uriSource, this.state.imageID, uploadNewPostAndNavigate)
+
+            if (this.state.posterCategory == ""){
+                    alert("Please choose pet type!")
+                    return
+                }
+
+            this.state = {}
             const newPost = {   
                 text: newText,
-                imageSource,
+                // imageSource,
                 numberOfLike: 0,
                 numberOfComment: 0,
                 owner:global.currentUser.id,
-                image: "123445",
-                petCategory
+                usersWhoLike:[],
+                numberOfComment: 0,
+                posterCategory, 
+                timestamp: firebase.firestore.Timestamp.now()   
             }
-            await firebaseSvc.setNewPost(newPost)
+
+            // update the pet object and get the doc object
+            const postDoc = await firebase.firestore().collection("CommunityPosts").add(newPost);
+            
+            if (imageSource != null) {
+                // upload image to storage at pet id
+                const success =  await this.uploadImage(imageSource,postDoc.id);
+                // update the pet object and get the doc object
+                const url = await firebase.storage().ref('PostImage').child(postDoc.id).getDownloadURL()
+                console.log("URL")
+                console.log(url)
+                // update the pet object and get the doc object
+                const pet = await firebase.firestore().collection('CommunityPosts').doc(postDoc.id).update({image: url})
+                // alert("Register success!")
+            }
+            
+            navigation.navigate("Feed")
+
+            // const newPost = {   
+            //     text: newText,
+            //     imageSource,
+            //     numberOfLike: 0,
+            //     numberOfComment: 0,
+            //     owner:global.currentUser.id,
+            //     image: "123445",
+            //     petCategory
+            // }
+            // await firebaseSvc.setNewPost(newPost)
         }})
     }
 
@@ -86,7 +121,7 @@ class NewCommunityPost extends React.Component {
 
     static navigationOptions = ({navigation}) => ({
         title: 'New Community Post',
-        headerRight: <Button title="Post" onPress={ () =>{navigation.state.params.handleSave(); navigation.navigate("Feed") }}/>
+        headerRight: <Button title="Post" onPress={ () =>{navigation.state.params.handleSave() }}/>
     });
 
     pickImage = () => {
@@ -113,8 +148,9 @@ class NewCommunityPost extends React.Component {
 
 
     render(){
-        return (
-        <View style={{padding:12}}>
+        return (        
+        <SafeAreaView>
+            <View style={{padding:12}}>
             <TextInput style={styles.posterSubject}>
               Welcome to the community!
             </TextInput>
@@ -173,61 +209,126 @@ class NewCommunityPost extends React.Component {
                 <Icon name="navigation" size={24} style={{marginRight:30}}></Icon>
                 <Button title="Add location" color={"black"} onPress={ this.pickImage }/>
             </View> 
-        </View>
+            </View>
+        </SafeAreaView>
         )
     }
 
-
-    uploadImage = async (source, imageName, callback) => {
-        console.log('got image to upload. uri:' + source.uri);
+    uploadImage = async (source,postID) => {
         try {
             const response = await fetch(source.uri);
             const blob = await response.blob();
-            const ref = firebase.storage().ref('PostImage').child(imageName);
+            const ref = firebase.storage().ref('PostImage').child(postID);
             const task = ref.put(blob);
-
-            task.on('state_changed',(snapshot) => {
-                // Observe state change events such as progress, pause, and resume
-                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-
-                switch (snapshot.state) {
-                    case firebase.storage.TaskState.PAUSED: // or 'paused'
+            
+            return new Promise((resolve, reject) => {
+                task.on('state_changed',(snapshot) => {
+                    // Observe state change events such as progress, pause, and resume
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED: // or 'paused'
                         console.log('Upload is paused');
                         break;
-                    
-                    case firebase.storage.TaskState.RUNNING: // or 'running'
+                        case firebase.storage.TaskState.RUNNING: // or 'running'
                         console.log('Upload is running');
                         break;
-                }
-                /* noop but you can track the progress here */
-            },  error => console.log,
-                callback) 
-
-            // return new Promise((resolve, reject) => {
-            //     task.on('state_changed',(snapshot) => {
-            //         // Observe state change events such as progress, pause, and resume
-            //         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            //         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            //         console.log('Upload is ' + progress + '% done');
-            //         switch (snapshot.state) {
-            //             case firebase.storage.TaskState.PAUSED: // or 'paused'
-            //             console.log('Upload is paused');
-            //             break;
-            //             case firebase.storage.TaskState.RUNNING: // or 'running'
-            //             console.log('Upload is running');
-            //             break;
-            //         }
-            //         /* noop but you can track the progress here */
-            //     },reject /* this is where you would put an error callback! */,
-            //         () => resolve(task.snapshot.downloadURL)
-            //     );
-            // });
+                    }
+                    /* noop but you can track the progress here */
+                },reject /* this is where you would put an error callback! */,
+                    () => resolve(task.snapshot.downloadURL)
+                );
+            });
         } catch (err) {
             console.log('uploadImage try/catch error: ' + err.message); 
         }
     }
+
+    // confirmButton = async () => {
+    //     // if (this.state.petType == ""){
+    //     //     alert("Please choose pet type!")
+    //     //     return
+    //     // }
+    //     // if (this.state.petName == ""){
+    //     //     alert("Please fill pet name!")
+    //     //     return
+    //     // }
+    //     // if (this.state.petAge == null){
+    //     //     alert("Please fill pet age!")
+    //     //     return
+    //     // }
+    //     // if (this.state.petTypeDetail == ""){
+    //     //     alert("Please fill pet type detail!")
+    //     //     return
+    //     // }
+    //     this.state = {}
+
+    //     // update the pet object and get the doc object
+    //     const postDoc = await firebase.firestore().collection("CommunityPosts").add(this.state);
+        
+    //     if (this.state.imageSource != null) {
+    //         // upload image to storage at pet id
+    //         const success =  await this.uploadImage(this.state.imageSource,postDoc.id).catch(reason => alert("error"));
+    //         // update the pet object and get the doc object
+    //         const url = await firebase.storage().ref('PostImage').child(postDoc.id).getDownloadURL()
+    //         // update the pet object and get the doc object
+    //         const pet = await firebase.firestore().collection('CommunityPosts').doc(petDoc.id).update({imageSource: url})
+    //         alert("Register success!")
+    //     }
+    //     // this.props.navigation.navigate("App")
+    // }
+
+    // uploadImage = async (source, imageName, callback) => {
+    //     console.log('got image to upload. uri:' + source.uri);
+    //     try {
+    //         const response = await fetch(source.uri);
+    //         const blob = await response.blob();
+    //         const ref = firebase.storage().ref('PostImage').child(imageName);
+    //         const task = ref.put(blob);
+
+    //         task.on('state_changed',(snapshot) => {
+    //             // Observe state change events such as progress, pause, and resume
+    //             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    //             var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //             console.log('Upload is ' + progress + '% done');
+
+    //             switch (snapshot.state) {
+    //                 case firebase.storage.TaskState.PAUSED: // or 'paused'
+    //                     console.log('Upload is paused');
+    //                     break;
+                    
+    //                 case firebase.storage.TaskState.RUNNING: // or 'running'
+    //                     console.log('Upload is running');
+    //                     break;
+    //             }
+    //             /* noop but you can track the progress here */
+    //         },  error => console.log,
+    //             callback) 
+
+    //         // return new Promise((resolve, reject) => {
+    //         //     task.on('state_changed',(snapshot) => {
+    //         //         // Observe state change events such as progress, pause, and resume
+    //         //         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    //         //         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //         //         console.log('Upload is ' + progress + '% done');
+    //         //         switch (snapshot.state) {
+    //         //             case firebase.storage.TaskState.PAUSED: // or 'paused'
+    //         //             console.log('Upload is paused');
+    //         //             break;
+    //         //             case firebase.storage.TaskState.RUNNING: // or 'running'
+    //         //             console.log('Upload is running');
+    //         //             break;
+    //         //         }
+    //         //         /* noop but you can track the progress here */
+    //         //     },reject /* this is where you would put an error callback! */,
+    //         //         () => resolve(task.snapshot.downloadURL)
+    //         //     );
+    //         // });
+    //     } catch (err) {
+    //         console.log('uploadImage try/catch error: ' + err.message); 
+    //     }
+    // }
 }
 
 const styles = StyleSheet.create({
@@ -238,12 +339,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
     fontWeight:"bold",
-    alignItems:"flex-start"
+    alignItems:"flex-start",
+    color:"#000"
   },
   postContent: {
     paddingHorizontal:4,
     fontSize:12,
-    height:300 
+    height:300,
+    color: "#000"
   }, 
   categoryButton:{
     width: 68,

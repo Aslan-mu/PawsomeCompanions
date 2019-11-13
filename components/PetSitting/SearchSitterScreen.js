@@ -4,7 +4,7 @@ import {
   StyleSheet, Text,
   TextInput, View,
   Button, ImageEditor, ScrollView,
-  Image, Platform, FlatList, SectionList, TouchableHighlight
+  Image, Platform, FlatList, SectionList, TouchableHighlight, TouchableOpacity
 } from "react-native"
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -79,9 +79,9 @@ function NameTag({ name, deleteAName, id }) {
   return (
     <View style={{ borderRadius: 4, marginVertical: 4, marginHorizontal:4, paddingHorizontal: 4, height: 30, backgroundColor: "#a59af5", flexDirection: "row", alignItems: "center", }}>
       <Text style={{ fontSize: 16, color:"#ffffff"}}> {name} </Text>
-      <TouchableHighlight underlayColor= "#a59af5" onPress={() => deleteAName(name, id)}>
+      <TouchableOpacity underlayColor= "#a59af5" onPress={() => deleteAName(name, id)}>
         <Icon name={"close"} size={16} color="#ffffff"></Icon>
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -108,7 +108,7 @@ function Item({ title, addANewSitterCandidate, deleteAName, sitterChecked, numOf
     <TouchableHighlight onPress={onChecked} underlayColor="white">
       <View style={styles.item}>
         <TouchableHighlight onPress={ ()=> navigation.navigate("UserProfilePage", {userData: item})} >
-          <View style={styles.personProfilePhoto}></View>
+          <Image source={{uri:item.image}} style={styles.personProfilePhoto}></Image>
         </TouchableHighlight>
         <View>
             <Text style={styles.sitterName}>{item.name}</Text>
@@ -159,8 +159,6 @@ function Header({ title }) {
   )
 }
 
-
-
 export default class SearchSitterList extends React.Component {
 
   constructor(props) {
@@ -174,7 +172,9 @@ export default class SearchSitterList extends React.Component {
         startDate: props.navigation.getParam("startDate", "default"),
         endDate: passedInData.endDate,
         additionalNotes: passedInData.additionalNotes,
-        service: passedInData.service
+        service: passedInData.service,
+        petID: passedInData.petID,
+        petName: passedInData.petName
       }, 
       petSittingData: PETSITTING_DATA
     }
@@ -215,10 +215,11 @@ export default class SearchSitterList extends React.Component {
           const id = doc.id
           incomingUserData.push({
             name: userData.name,
-            image: userData.image,
+            // image: userData.image,
+            image: null,
             numOfRecommendations:userData.numOfRecommendations,
-            community: "",
-            livingDistance: "",
+            community: userData.community,
+            // livingDistance: "",
             userID: id
           })
         })
