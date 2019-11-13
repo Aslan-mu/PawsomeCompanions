@@ -152,7 +152,6 @@ const tabNavigator = createBottomTabNavigator({
       )
     }
   },
-  // PetSittingInstruction: petSittingTab
 }, {
   initialRouteParams: {notification: "1234"},
   resetOnBlur: true,
@@ -160,7 +159,6 @@ const tabNavigator = createBottomTabNavigator({
     tabStyle:{
       justifyContent:"center",
       alignItems:"center",
-      // backgroundColor:"red",
     }
     }
   })

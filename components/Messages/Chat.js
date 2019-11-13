@@ -55,16 +55,17 @@ class Chat extends React.Component{
             endDate: data.endDate,
             owner: data.owner,
             sitter: data.sitter,
-            pet: 'Griffey',
+            pet: data.petName,
+            petID: data.petID, 
             service: data.service,
-            additionNotes: data.additionNotes
+            additionalNotes: data.additionalNotes,
         })
         
         this.setState({
             request:false
         })
         alert("Accepted the request!")
-        console.log("accept");
+        // console.log("accept");
     }
 
     declineButton = () => {

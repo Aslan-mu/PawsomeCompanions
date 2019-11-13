@@ -85,6 +85,46 @@ export default class PetSittingInstructionsController extends React.Component {
               this.setState({
                 todaySession: this.state.todaySession.concat([newSession]),
               });
+            
+              // Can I add a event listener here?
+
+            const instructionsListener = firebaseSvc
+            .refFirestoreSubCollectionInstruction(sessionID)
+            .onSnapshot(querySnapshot => {
+              let stateInstructions = [];
+              if (this.state.todaySession.length !== 0) {
+                stateInstructions = this.state.todaySession[0].instructions;
+              }
+
+              querySnapshot.docChanges().forEach(async change => {
+                if (change.type == 'added') {
+                  console.log('Instruction added');
+                  const doc = change.doc.id;
+                  console.log(change.doc.id);
+
+                  const data = change.doc.data();
+                  stateInstructions.push({
+                    id: doc.id,
+                    crucial: data.crucial,
+                    date: data.date,
+                    instruction: data.instruction,
+                    repeat: data.repeat,
+                    reminder: data.reminder,
+                  });
+                }
+              });
+
+              this.setState(prevState => {
+                if (prevState.todaySession.length !== 0) {
+                  const prevTodaySession = prevState.todaySession[0];
+                  prevTodaySession.instructions = stateInstructions;
+
+                  return {todaySession: [].concat([prevTodaySession])};
+                }
+                return {};
+              });
+            });
+
             } else {
               this.setState((prevState, props) => {
                 return {
@@ -94,44 +134,6 @@ export default class PetSittingInstructionsController extends React.Component {
                 };
               });
             }
-
-            // Can I add a event listener here?
-            const instructionsListener = firebaseSvc
-              .refFirestoreSubCollectionInstruction(sessionID)
-              .onSnapshot(querySnapshot => {
-                let stateInstructions = [];
-                if (this.state.todaySession.length !== 0) {
-                  stateInstructions = this.state.todaySession[0].instructions;
-                }
-
-                querySnapshot.docChanges().forEach(async change => {
-                  if (change.type == 'added') {
-                    console.log('Instruction added');
-                    const doc = change.doc.id;
-                    console.log(change.doc.id);
-
-                    const data = change.doc.data();
-                    stateInstructions.push({
-                      id: doc.id,
-                      crucial: data.crucial,
-                      date: data.date,
-                      instruction: data.instruction,
-                      repeat: data.repeat,
-                      reminder: data.reminder,
-                    });
-                  }
-                });
-
-                this.setState(prevState => {
-                  if (prevState.todaySession.length !== 0) {
-                    const prevTodaySession = prevState.todaySession[0];
-                    prevTodaySession.instructions = stateInstructions;
-
-                    return {todaySession: [].concat([prevTodaySession])};
-                  }
-                  return {};
-                });
-              });
 
             // const {startDate, endDate, owner, sitter, service, pet, additionalNotes} = ownerResult.data()
             // const snapshots = await firebaseSvc.queryInstructionsForOneSession(ownerResult.id)
@@ -185,17 +187,8 @@ export default class PetSittingInstructionsController extends React.Component {
               this.setState({
                 todaySession: this.state.todaySession.concat([newSession]),
               });
-            } else {
-              this.setState((prevState, props) => {
-                return {
-                  incomingSession: prevState.incomingSession.concat([
-                    newSession,
-                  ]),
-                };
-              });
-            }
 
-            const instructionsListener = firebaseSvc
+              const instructionsListener = firebaseSvc
               .refFirestoreSubCollectionInstruction(sessionID)
               .onSnapshot(querySnapshot => {
                 let stateInstructions = [];
@@ -231,6 +224,15 @@ export default class PetSittingInstructionsController extends React.Component {
                   return {};
                 });
               });
+            } else {
+              this.setState((prevState, props) => {
+                return {
+                  incomingSession: prevState.incomingSession.concat([
+                    newSession,
+                  ]),
+                };
+              });
+            }
           }
         });
       });
@@ -464,10 +466,11 @@ const IndividualSessionCard = props => {
 
         {// There will always a dummy one
         instructions.length === 1 ? (
+            isOwner ?  
           <Text>
-            "Your haven’t added any instructions You can add tasks and
-            instructions and the pet sitter can view them from here."
-          </Text>
+            Your haven’t added any instructions You can add tasks and
+            instructions and the pet sitter can view them from here.
+          </Text> : <Text> The pet owner hasn't added any instruction. You can remind him</Text>
         ) : (
           instructions.map((instruction, i) => {
             if (instruction.instruction === 'add a new instruction') return;

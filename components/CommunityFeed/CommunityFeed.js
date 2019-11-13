@@ -1,9 +1,9 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import {
     StyleSheet, Text,
     TextInput, View,
     Button, ImageEditor, ScrollView,
-    Image, TouchableOpacity, SafeAreaView
+    Image, TouchableOpacity, SafeAreaView, Dimensions
 } from "react-native"
 import firebaseSvc from '../../FirebaseSvc';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -50,10 +50,25 @@ function IndividualPostCard(props) {
 
     })
 
+    const [imageWidth, setImageWidth] = useState(0)
+    const [imageHeight, setImageHeight] = useState(0)
+
+
     const data = props.postData
     const imageString = data.imageSourceText
 
     const doesCurrentUserLikePost = props.postData.usersWhoLike.includes(global.currentUser.id)
+
+    const window = Dimensions.get('window')
+
+    Image.getSize( data.imageSource, (width, height) =>{
+        const aspectRatio = width/height 
+        const fullWidthRatioHeight = (window.width - 32) / aspectRatio
+        setImageHeight(fullWidthRatioHeight)
+        setImageWidth(window.width-32)
+    })
+
+
     return (
         <View style={styles.card}>
             <View style={{flexDirection: "row", alignItems: "center", height:60}}>
@@ -66,12 +81,12 @@ function IndividualPostCard(props) {
                 <Icon size={24} name="more-vert" style={{position:"absolute", right: 0}}></Icon>
             </View>
             
-            <Image style={{ height: 150, resizeMode: "contain" }} source={{uri:data.imageSource}}>
+            <Image style={{height:imageHeight, width:imageWidth, resizeMode: "cover"}} source={{uri:data.imageSource}}>
             </Image>
             
-            <View style={{paddingVertical: 10, flex: 1, flexDirection: "column" }}>
+            <View style={{paddingVertical: 4, flex: 1, flexDirection: "column" }}>
                 {/* Person and text */}
-                <View style={{ flex: 1, flexDirection: "row", height: 70, alignItems: "center" }}>
+                <View style={{ flex: 1, flexDirection: "row", height: 30, alignItems: "center" }}>
                     <Text>{data.text}</Text>
                 </View>
 
@@ -206,7 +221,7 @@ class CommunityFeed extends React.Component {
 
     modifiedSnapshot = (postData, postID) =>{
         // Find the existing data with the same postID
-        postData.owner.get().then(res => {
+        firebaseSvc.refUser().doc(postData.owner).get().then(res => {
             const postOwner = res.data()
             const newData = {
                 text : postData.text,
@@ -214,7 +229,7 @@ class CommunityFeed extends React.Component {
                 numberOfComment: postData.numberOfComment,
                 numberOfLike: postData.usersWhoLike.length,
                 imageSource: postData.image,
-                userID: postData.ownerID,
+                // userID: postData.ownerID,
                 user: postOwner.name,
                 usersWhoLike: postData.usersWhoLike,
                 postCategory: postData.postCategory,
@@ -237,15 +252,16 @@ class CommunityFeed extends React.Component {
         // liked: false,
         // commented: false,
         // timestamp: 1571163581361
-        postData.owner.get().then(res => {
+        firebaseSvc.refUser().doc(postData.owner).get().then(res => {
             const postOwner = res.data()
             const newData = {
                 text : postData.text,
                 timestamp: postData.timestamp,
                 numberOfComment: postData.numberOfComment,
                 numberOfLike: postData.usersWhoLike.length,
-                imageSource: postData.image,
-                userID: postData.ownerID,
+                // imageSource: postData.image,
+                imageSource: testImageLink,
+                // userID: postData.ownerID,
                 user: postOwner.name,
                 usersWhoLike: postData.usersWhoLike,
                 postCategory: postData.postCategory,
@@ -337,7 +353,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         marginBottom: 10,
         width: "100%",
-        height: 306,
+        // height: 306,
         backgroundColor: "#ffffff",
         shadowColor: "#ededed",
         shadowOffset: {

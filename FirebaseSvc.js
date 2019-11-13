@@ -340,6 +340,8 @@ class FirebaseSvc {
 
     refSavedInstructionsForSpecificUser = (userID)=> this.refSavedInstructions().where("owner", "==", userID)
 
+    refPets = () => firebase.firestore().collection("Pets")
+
 }
 const firebaseSvc = new FirebaseSvc();
 export default firebaseSvc;

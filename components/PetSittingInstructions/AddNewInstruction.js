@@ -95,6 +95,7 @@ function DateTimePickerComponent(props) {
                 is24Hour={true}
                 display="default"
                 // date = {date}
+                style={{backgroundColor:"#c9c9c9"}}
                 onChange={onDateChange}
             />
         </View>)
@@ -281,7 +282,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ecebed",
         alignItems:"center",
-        marginTop:22
+        marginTop:22,
+        color: "#000"
     }, 
     createFromSaved : {
         height: 18,
@@ -345,9 +347,7 @@ const styles = StyleSheet.create({
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#ecebed",
-        padding: 8
+        padding: 8,
+        color: "#000"
     }
-
-
-
 })

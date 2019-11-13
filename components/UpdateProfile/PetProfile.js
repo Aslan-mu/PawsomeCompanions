@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
         margin:10
     },
     inputField: {
+        color: "#000000",
         borderBottomWidth: 1,
         borderBottomColor: "#e5e3e2",
         backgroundColor: "#ffffff",

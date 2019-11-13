@@ -17,9 +17,9 @@ import {TabView, SceneMap} from 'react-native-tab-view';
 
 const PostRoute = () => (
   <View style={[styles.scene, {backgroundColor: '#ffffff'}]} >
-      <Text>
-        This is the post route
-      </Text>
+    <Text>
+      This is the post route
+    </Text>
   </View>
 );
 

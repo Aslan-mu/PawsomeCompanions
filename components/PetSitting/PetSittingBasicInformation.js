@@ -10,9 +10,7 @@ import {
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-
-
+import firebaseSvc from "../../FirebaseSvc";
 
 function DateTimePickerComponent(props) {
     // Need to set the data. so it will pass in a set time function, which accepts two different 
@@ -37,6 +35,7 @@ function DateTimePickerComponent(props) {
                 is24Hour={true}
                 display="default"
                 // date = {date}
+                style={{backgroundColor:"#c9c9c9"}}
                 onChange={onDateChange}
             />
         </View>)
@@ -66,7 +65,13 @@ export default class PetSittingBasicInformation extends React.Component {
             endDate: undefined,
             mode: 'date',
             service: "",
-            additionalNotes: ""
+            additionalNotes: "",
+            pet: {
+                petName: "",
+                petImageSource: "",
+                selected: true,
+                petID:"",
+            }
         }
     }
 
@@ -98,6 +103,20 @@ export default class PetSittingBasicInformation extends React.Component {
         console.log(date)
         this.setState({ show: false, startDate: date })
     }
+
+    componentDidMount = () => {
+        // Get the pet whose owner is this id 
+        firebaseSvc.refPets().where("owner", "==", global.currentUser.id).get().then(snapshot => {
+            snapshot.forEach(doc => {
+                const petID = doc.id
+                const pet = doc.data()
+                this.setState({pet: {...this.state.pet, petName: pet.petName, 
+                                    petImageSource: pet.imageSource,
+                                    petID
+                                }})
+            })
+        }) 
+    } 
 
     submitForEndDate = (date) => {
         if (this.state.startDate !== undefined){
@@ -156,14 +175,16 @@ export default class PetSittingBasicInformation extends React.Component {
             console.log(ret)
             return ret
         }
-
+        
     navigateToSearch =
         () => 
             this.props.navigation.navigate("SearchSitterList",{
                 startDate: this.state.startDate,
                 endDate: this.state.endDate,
                 service: this.state.service,
-                additionalNotes: this.state.additionalNotes
+                additionalNotes: this.state.additionalNotes,
+                petName:this.state.pet.petName,
+                petID: this.state.pet.petID
             }) 
 
     render() {
@@ -216,14 +237,21 @@ export default class PetSittingBasicInformation extends React.Component {
                         </Text>
 
                         <View style={{ width: 100, justifyContent: "center", alignItems: "center" }}>
-                            <ImageBackground style={styles.personProfilePhoto} imageStyle={styles.petImageStyle} defaultSource={require("./griffey.jpg")}>
-                                <View style={styles.checkMark} >
-                                    <Icon name={"check"} size={16} color={"#ffffff"}></Icon>
-                                </View>
-                            </ImageBackground>
-                            <Text style={styles.petName}>
-                                Griffey
-                            </Text>
+                            {/* require("./griffey.jpg") */}
+                            <TouchableOpacity onPress={ () => {this.setState({ pet:{...this.state.pet, selected: !this.state.pet.selected } })} }>
+                                <ImageBackground style={styles.personProfilePhoto} imageStyle={styles.petImageStyle} defaultSource={null} source={{uri: this.state.pet.petImageSource}}>
+                                    {
+                                        this.state.pet.selected? 
+                                        <View style={styles.checkMark} >
+                                            <Icon name={"check"} size={16} color={"#ffffff"}></Icon>
+                                        </View>
+                                        : <View></View>
+                                    }
+                                </ImageBackground>
+                                <Text style={styles.petName}>
+                                    {this.state.pet.petName}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -389,7 +417,7 @@ const styles = StyleSheet.create({
         color: "#1a051d"
     },
     petName: {
-        width: 60,
+        // width: 60,
         // backgroundColor: "red",
         height: 14,
         // fontFamily: "SFProText",
@@ -484,6 +512,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff",
         borderRadius: 8, 
         padding: 12,
+        color: "#000"
     },
     title : {
         // width: 85,
