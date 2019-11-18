@@ -111,18 +111,19 @@ const tabNavigator = createBottomTabNavigator({
       console.log(screenProps)
   
 
-      if (anyNotification){
-        return {
-          tabBarIcon:({tintColor}) => (
-            <Icon name="home" size={24} color={tintColor} style={{alignSelf:"center"}}> </Icon>
-          )
-        }}
-      return {}
-    s},
+      // if (anyNotification){
+      //   return {
+      //     tabBarIcon:({tintColor}) => (
+      //       <Icon name="home" size={24} color={tintColor} style={{alignSelf:"center"}}> </Icon>
+      //     )
+      //   }}
+      // return {}
+    },
   },
   PetSitting: {
     screen: petsittingStack,
     navigationOptions: {
+      tabBarLabel: "Search",
       tabBarIcon: ({tintColor}) =>(
         <Icon name="search" size={24} color={tintColor} ></Icon>
       )
@@ -175,6 +176,12 @@ messageStack.navigationOptions = ({ navigation }) => {
     }
 }
 
+petSittingInstructionStack.navigationOptions = ({navigation}) =>{
+    return {
+      tabBarLabel: "Pet Session"
+    }
+}
+
 communityStack.navigationOptions = ({ navigation }) => {
 
     // I figure out the problem
@@ -189,14 +196,14 @@ communityStack.navigationOptions = ({ navigation }) => {
     //     return {tabBarIcon: <Icon name="search" size={24} color={tintColor}></Icon>}
     // }
 
-    // if ( routeName == 'NewCommunityPost' ) {
-    //     tabBarVisible = false
-    // }
-    // return {
-    //     tabBarVisible,
-    //     tabBarIcon: 
-    //       ({tintColor}) => <Icon name="home" size={24} color={tintColor}></Icon>
-    // }
+    if ( routeName == 'NewCommunityPost' ) {
+        tabBarVisible = false
+    }
+    return {
+        tabBarVisible,
+        tabBarIcon: 
+          ({tintColor}) => <Icon name="home" size={24} color={tintColor}></Icon>
+    }
 }
 
 export default createAppContainer(createSwitchNavigator({

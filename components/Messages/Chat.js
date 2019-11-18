@@ -20,6 +20,7 @@ class Chat extends React.Component{
             chatWith: this.props.navigation.state.params.chatWith,
         }
         this.state.request = this.props.navigation.state.params.request
+        this.state.decline = this.props.navigation.state.params.decline
     }
     static navigationOptions = ({ navigation }) => ({
         title: (navigation.state.params || {}).chatWith || 'Chat!'
@@ -45,7 +46,7 @@ class Chat extends React.Component{
     }
 
     acceptButton =  async() => {
-        requestRef = firebaseSvc.refRequests().doc(this.state.request.id).update({accepted: true})
+        const requestRef = firebaseSvc.refRequests().doc(this.state.request.id).update({accepted: true})
         const doc =  await firebaseSvc.refRequests().doc(this.state.request.id).get()
         const data = doc.data()
         
@@ -69,9 +70,11 @@ class Chat extends React.Component{
     }
 
     declineButton = () => {
+        const requestRef = firebaseSvc.refRequests().doc(this.state.request.id).update({decline: true})
         this.setState({
             request:false
         })
+    
         alert("Declined the request!")
         console.log("decline");
     }

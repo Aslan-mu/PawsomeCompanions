@@ -11,6 +11,7 @@ function Item({ data, navigation }) {
                 () => {
                     navigation.navigate('Chat', {
                         request: data.request,
+                        decline: data.decline,
                         chatWith: data.name,
                         _idTo: data._idTo,
                     })
@@ -103,7 +104,7 @@ class ChatMain extends React.Component {
         requestRef = firebaseSvc.refRequests().where("sitter", "==", userId).onSnapshot(querySnapshot => {
             returnDoc = false;
             querySnapshot.docChanges().forEach(change => {
-                if (change.type === 'added' && !change.doc.data().accepted) {
+                if (change.type === 'added' && !change.doc.data().accepted && !change.doc.data().decline) {
                     var data = this.state.data
                     data.forEach((temp)=>{
                         owner = change.doc.data().owner;
@@ -115,7 +116,7 @@ class ChatMain extends React.Component {
                         }
                     })
                 }
-                if (change.type === 'modified' && change.doc.data().accepted) {
+                if (change.type === 'modified' && change.doc.data().accepted && change.doc.data().decline) {
                     var data = this.state.data
                     data.forEach((temp)=>{
                         owner = change.doc.data().owner;

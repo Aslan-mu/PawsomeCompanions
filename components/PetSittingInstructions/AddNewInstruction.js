@@ -10,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firebaseSvc from "../../FirebaseSvc";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {format} from "date-fns"
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons"
 
 const colors = {
@@ -209,7 +210,7 @@ export default class AddNewInstruction extends React.Component {
 
                     {/* This should be a date picker */}
                     <Text style={{marginLeft: 8}}>
-                        Time: {this.state.time === undefined ? "Selected Date": this.state.time.toTimeString()}
+                        Time: {this.state.time === undefined ? "Select time": format(this.state.time, "hh:mm A")}
                     </Text>         
 
                     {/* <Button title="Morning" onPress = {() => {}} >

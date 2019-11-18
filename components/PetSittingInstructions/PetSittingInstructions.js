@@ -368,7 +368,7 @@ const IndividualSessionCard = props => {
             <Icon name="info" size={16}></Icon>
             <Text style={styles.dogNameText}> Drop-in visit </Text>
           </View>
-
+           { sessionData.additionalNotes !== "" ?
           <View
             style={{
               flexDirection: 'row',
@@ -391,7 +391,7 @@ const IndividualSessionCard = props => {
                   : sessionData.additionalNotes}{' '}
               </Text>
             </TouchableOpacity>
-
+          
             {sessionData.additionalNotes.length > 35 && !wantReadMore ? (
               // alignItems:"center", justifyContent:"center"
               <TouchableOpacity
@@ -409,7 +409,8 @@ const IndividualSessionCard = props => {
             ) : (
               <View />
             )}
-          </View>
+          </View> : <View/>    
+               }
 
           <TouchableOpacity
             style={[
@@ -476,7 +477,7 @@ const IndividualSessionCard = props => {
             if (instruction.instruction === 'add a new instruction') return;
 
             return (
-              <View style={{marginBottom: 8}}>
+              <View key={ instruction.substring(0,3) + i} style={{marginBottom: 8}}>
                 <View
                   style={{flexDirection: 'row', alignItems: 'flex-start'}}
                   key={i}>

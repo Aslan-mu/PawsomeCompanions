@@ -5,7 +5,7 @@ import {
     Button, ImageEditor, ScrollView,
     Image, Platform, TouchableOpacity, 
     ImageBackground, Alert,
-    SafeAreaView
+    SafeAreaView, Dimensions
 } from "react-native"
 
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     },
     startDateFrame: {
         flexDirection: "row",
-        width: 160,
+        width: Dimensions.get("window").width / 2 -30,
         height: 48,
         borderRadius: 6,
         backgroundColor: "#ffffff",
