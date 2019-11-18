@@ -3,6 +3,7 @@ import firebaseSvc from '../../FirebaseSvc';
 import {
   StyleSheet, Text,
   View,TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 
 class PetSittingPreference extends React.Component {
@@ -29,7 +30,7 @@ class PetSittingPreference extends React.Component {
     }
     render() {
         return (
-            <View style = {styles.viewStyle}>
+            <ScrollView style = {styles.viewStyle}>
                 <View style={styles.columnBox1}>
                     <Text style={styles.servicesLabel}>
                         What pets are you willing to take care of?
@@ -87,7 +88,7 @@ class PetSittingPreference extends React.Component {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }

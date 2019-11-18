@@ -2,6 +2,7 @@ import React from 'react';
 import {
   StyleSheet, Text,
   View,TouchableOpacity,
+  Dimensions
 } from 'react-native';
 
 class PetSittingPreferenceStart extends React.Component {
@@ -43,8 +44,8 @@ class PetSittingPreferenceStart extends React.Component {
   
 const styles = StyleSheet.create({
     viewStyle:{
-        paddingTop:150,
-        paddingBottom:200,
+        paddingTop:0.16*Dimensions.get('window').height,
+        paddingBottom:0.223*Dimensions.get('window').height,
         flex:1,
         backgroundColor:"rgb(250,250,251)"
     },

@@ -1,139 +1,136 @@
 import React from 'react';
 import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  AsyncStorage,
-  TouchableOpacity,
-  Button,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
+	ScrollView,
+	AsyncStorage,
+	TouchableOpacity,
+	Dimensions,
 } from 'react-native';
 import firebaseSvc from '../../FirebaseSvc';
 import firebase from 'firebase';
 
 class Login extends React.Component {
-  static navigationOptions = {
-    title: 'Login',
-  };
+	static navigationOptions = {
+		title: 'Login',
+	};
 
-  state = {
-    name: '',
-    email: '',
-    password: '',
-  };
+	state = {
+		name: '',
+		email: '',
+		password: '',
+	};
 
-  onPressLogin = async () => {
-    console.log('pressing login... email:' + this.state.email);
-    const user = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-    };
-    const response = firebaseSvc.login(
-      user,
-      this.loginSuccess,
-      this.loginFailed,
-    );
-  };
+	onPressLogin = async () => {
+		console.log('pressing login... email:' + this.state.email);
+		const user = {
+			name: this.state.name,
+			email: this.state.email,
+			password: this.state.password,
+		};
+		const response = firebaseSvc.login(
+			user,
+			this.loginSuccess,
+			this.loginFailed,
+		);
+	};
 
-  setUserInfo = async callback => {
-    userId = firebase.auth().currentUser.uid;
-    const doc = await firebase
-      .firestore()
-      .collection('Users')
-      .doc(userId)
-      .get()
-      .catch(err => {
-        console.log('Error getting document', err);
-      });
+	setUserInfo = async callback => {
+		userId = firebase.auth().currentUser.uid;
+		const doc = await firebase
+		.firestore()
+		.collection('Users')
+		.doc(userId)
+		.get()
+		.catch(err => {
+			console.log('Error getting document', err);
+		});
 
-    if (!doc.exists) {
-        console.log('No User Find!');
-    } else {
-        const {name, email, image, community=""} = doc.data();
-        global.currentUser = {
-            id: userId,
-            email,
-            name,
-            community,
-            imageSource: {uri: image},
-        };
-    }
-    
-    callback();
-  };
+		if (!doc.exists) {
+			console.log('No User Find!');
+		} else {
+			const {name, email, image, community=""} = doc.data();
+			global.currentUser = {
+				id: userId,
+				email,
+				name,
+				community,
+				imageSource: {uri: image},
+			};
+		}
+		
+		callback();
+	};
 
-  navigateToMain = () => {
-    this._signInAsync();
-  };
+	navigateToMain = () => {
+		this._signInAsync();
+	};
 
-  loginSuccess = () => {
-    alert('Login Success!');
-    this.setUserInfo(this.navigateToMain);
-  };
+	loginSuccess = () => {
+		alert('Login Success!');
+		this.setUserInfo(this.navigateToMain);
+	};
 
-  _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', global.currentUser.id);
-    this.props.navigation.navigate('App');
-  };
+	_signInAsync = async () => {
+		await AsyncStorage.setItem('userToken', global.currentUser.id);
+		this.props.navigation.navigate('App');
+	};
 
-  loginFailed = () => {
-    alert('Login failed. Please try again.');
-  };
+	loginFailed = () => {
+		alert('Login failed. Please try again.');
+	};
 
-  onChangeTextEmail = email => this.setState({email});
-  onChangeTextPassword = password => this.setState({password});
+	onChangeTextEmail = email => this.setState({email});
+	onChangeTextPassword = password => this.setState({password});
 
-  render() {
-    return (
-      <View style={styles.viewStyle}>
-        <View style={styles.columnBox}>
-          <Text style={styles.title}>Hi there!</Text>
-          <Text style={styles.subTitle}>Welcome Back!</Text>
-        </View>
-        <View style={styles.columnBox}>
-          <Text style={styles.servicesLabel}>Email:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeHolder="test3@gmail.com"
-            onChangeText={this.onChangeTextEmail}
-            value={this.state.email}
-          />
-        </View>
-        <View style={styles.columnBox}>
-          <Text style={styles.servicesLabel}>Password:</Text>
-          <TextInput
-            style={styles.inputField}
-            onChangeText={this.onChangeTextPassword}
-            value={this.state.password}
-          />
-        </View>
-        <View style={styles.columnBox}>
-          <TouchableOpacity style={styles.button} onPress={this.onPressLogin}>
-            <Text style={styles.text}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => this.props.navigation.navigate('Feed')}>
-            <Text style={styles.text}>Community feed test</Text>
-          </TouchableOpacity>
-          <View style={styles.rowContainer}>
-            <Text>New to Pawsome Community?</Text>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('CreateAccount')}>
-              <Text style={{color: 'blue', marginLeft: 2}}>Sign up Here</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    );
-  }
+	render() {
+		return (
+			<ScrollView style={styles.viewStyle}>
+				<View style={styles.columnBox}>
+					<Text style={styles.title}>Hi there!</Text>
+					<Text style={styles.subTitle}>Welcome Back!</Text>
+				</View>
+				<View style={styles.columnBox}>
+					<Text style={styles.servicesLabel}>Email:</Text>
+					<TextInput
+						style={styles.inputField}
+						placeHolder="test3@gmail.com"
+						onChangeText={this.onChangeTextEmail}
+						value={this.state.email}
+					/>
+				</View>
+				<View style={styles.columnBox}>
+					<Text style={styles.servicesLabel}>Password:</Text>
+					<TextInput
+						secureTextEntry={true}
+						style={styles.inputField}
+						onChangeText={this.onChangeTextPassword}
+						value={this.state.password}
+					/>
+				</View>
+				<View style={styles.columnBox}>
+					<TouchableOpacity style={styles.button} onPress={this.onPressLogin}>
+						<Text style={styles.text}>Login</Text>
+					</TouchableOpacity>
+					<View style={styles.rowContainer}>
+						<Text>New to Pawsome Community?</Text>
+						<TouchableOpacity
+						onPress={() => this.props.navigation.navigate('CreateAccount')}>
+							<Text style={{color: 'blue', marginLeft: 2}}>Sign up Here</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</ScrollView>
+		);
+	}
 }
 
 const styles = StyleSheet.create({
   viewStyle: {
-    paddingTop: 100,
-    height: 800,
+    paddingTop: 0.04*Dimensions.get('window').height,
+    height: 0.89*Dimensions.get('window').height,
     backgroundColor: 'rgb(250,250,251)',
   },
   rowContainer: {

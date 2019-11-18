@@ -4,6 +4,7 @@ import {
   TextInput, View,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
 
 import firebaseSvc from '../../FirebaseSvc';
@@ -123,7 +124,7 @@ class Referral extends React.Component {
   
     render() {
         return (
-            <View style = {styles.viewStyle}>
+            <ScrollView style = {styles.viewStyle}>
                 <View style={styles.columnBox1}>
                     <Text style={styles.servicesLabel}>Your Image:</Text>
                     <TouchableOpacity style={{alignItems: 'center',marginBottom:20, width:80, height:80,}} 
@@ -156,7 +157,7 @@ class Referral extends React.Component {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }

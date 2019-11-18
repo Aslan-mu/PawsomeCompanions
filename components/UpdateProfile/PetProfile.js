@@ -1,9 +1,11 @@
 import React from 'react';
 import {
-  StyleSheet, Text,
-  TextInput, View,
-  TouchableOpacity,
-  Image,
+    StyleSheet, Text,
+    TextInput, View,
+    TouchableOpacity,
+    Image,
+    Dimensions,
+    ScrollView
 } from 'react-native';
 
 import firebaseSvc from '../../FirebaseSvc';
@@ -185,7 +187,7 @@ class Referral extends React.Component {
             color: '#9EA0A4',
           };
         return (
-            <View style = {styles.viewStyle}>
+            <ScrollView style = {styles.viewStyle}>
                 <View style={styles.columnBox}>
                     <Text style={styles.servicesLabel}>
                         Pet Profile
@@ -246,7 +248,6 @@ class Referral extends React.Component {
                                 return <Icon name="arrow-downward" size={24} color={"#d0c9d6"}></Icon>;
                             }}
                         />
-
                     </View>
                     <View >
                         <Text>Type: </Text>
@@ -265,7 +266,7 @@ class Referral extends React.Component {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
         marginTop: offset,
     },
     viewStyle:{
-        paddingTop:50,
+        paddingTop:0.055*Dimensions.get('window').height,
         flex:1,
         backgroundColor:"rgb(250,250,251)"
     },

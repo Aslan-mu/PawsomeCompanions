@@ -3,13 +3,14 @@ import {
   StyleSheet, Text, View,
   Image,
   TouchableOpacity,
+  Dimensions
 } from 'react-native';
 
 class Main extends React.Component {
     static navigationOptions = {
         header: null,
     };
-  
+
     render() {
         return (
             <View style = {styles.viewStyle}>
@@ -67,9 +68,9 @@ const styles = StyleSheet.create({
         margin:40
     },
     viewStyle:{
-        paddingTop:150,
-        paddingBottom:200,
         flex:1,
+        paddingTop:0.16*Dimensions.get('window').height,
+        paddingBottom:0.223*Dimensions.get('window').height,
         backgroundColor:"rgb(250,250,251)"
     },
     title: {

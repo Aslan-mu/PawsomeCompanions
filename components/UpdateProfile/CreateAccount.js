@@ -64,6 +64,7 @@ class CreateAccount extends React.Component {
                 <View style={styles.columnBox}>
                     <Text style={styles.servicesLabel}>Password:</Text>
                     <TextInput
+                        secureTextEntry={true}
                         style={styles.inputField}
                         onChangeText={this.onChangeTextPassword}
                         value={this.state.password}
